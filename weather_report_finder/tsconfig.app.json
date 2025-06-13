@@ -21,7 +21,14 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@configs/*": ["src/configs/*"],
+      "@views/*": ["src/views/*"],
+      "@slices/*": ["src/slices/*"]
+    }
   },
   "include": ["src"]
 }
