@@ -37,10 +37,10 @@ import React, { useEffect, useState } from "react";
 import { fetchWeather } from "@slices/weatherSlice";
 import { fetchLocation } from "@slices/locationSlice";
 import WeatherHeader from "./components/WeatherHeader";
-import { useAppDispatch, useAppSelector } from "@slices/store";
-import { WeatherStatusComponent } from "./WeatherStatusComponent";
-import { WeatherBackgroundAnimation } from "./components/WeatherBackgroundAnimation";
 import { WeatherCard } from "./components/WeatherCard";
+import { useAppDispatch, useAppSelector } from "@slices/store";
+import { WeatherStatusComponent } from "./components/WeatherStatusComponent";
+import { WeatherBackgroundAnimation } from "./components/WeatherBackgroundAnimation";
 
 const WeatherApp: React.FC = () => {
   const theme = useTheme();

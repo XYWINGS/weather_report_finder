@@ -85,6 +85,45 @@ const mistFloat = keyframes`
   }
 `;
 
+const lightningKeyframes = `
+    @keyframes lightning {
+      0% { opacity: 0; }
+      2% { opacity: 1; }
+      4% { opacity: 0; }
+      6% { opacity: 1; }
+      8% { opacity: 0; }
+      100% { opacity: 0; }
+    }
+  `;
+
+const lightningBoltKeyframes = `
+    @keyframes lightningBolt {
+      0% { opacity: 0; transform: scaleY(0); }
+      1% { opacity: 1; transform: scaleY(1); }
+      3% { opacity: 1; transform: scaleY(1); }
+      5% { opacity: 0; transform: scaleY(0); }
+      100% { opacity: 0; transform: scaleY(0); }
+    }
+  `;
+
+const skyFlashKeyframes = `
+    @keyframes skyFlash {
+      0% { background: rgba(135, 206, 235, 0.1); }
+      2% { background: rgba(255, 255, 255, 0.4); }
+      4% { background: rgba(135, 206, 235, 0.1); }
+      6% { background: rgba(255, 255, 255, 0.3); }
+      8% { background: rgba(135, 206, 235, 0.1); }
+      100% { background: rgba(135, 206, 235, 0.1); }
+    }
+  `;
+
+const rainKeyframes = `
+    @keyframes rainFall {
+      0% { transform: translateY(-100vh); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+  `;
+
 interface WeatherBackgroundProps {
   condition: number;
   children?: React.ReactNode;
@@ -214,72 +253,6 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
   );
 
   const renderStormAnimation = () => {
-    const lightningKeyframes = `
-    @keyframes lightning {
-      0% { opacity: 0; }
-      2% { opacity: 1; }
-      4% { opacity: 0; }
-      6% { opacity: 1; }
-      8% { opacity: 0; }
-      100% { opacity: 0; }
-    }
-  `;
-
-    const lightningBoltKeyframes = `
-    @keyframes lightningBolt {
-      0% { opacity: 0; transform: scaleY(0); }
-      1% { opacity: 1; transform: scaleY(1); }
-      3% { opacity: 1; transform: scaleY(1); }
-      5% { opacity: 0; transform: scaleY(0); }
-      100% { opacity: 0; transform: scaleY(0); }
-    }
-  `;
-
-    const skyFlashKeyframes = `
-    @keyframes skyFlash {
-      0% { background: rgba(135, 206, 235, 0.1); }
-      2% { background: rgba(255, 255, 255, 0.4); }
-      4% { background: rgba(135, 206, 235, 0.1); }
-      6% { background: rgba(255, 255, 255, 0.3); }
-      8% { background: rgba(135, 206, 235, 0.1); }
-      100% { background: rgba(135, 206, 235, 0.1); }
-    }
-  `;
-
-    const rainKeyframes = `
-    @keyframes rainFall {
-      0% { transform: translateY(-100vh); opacity: 1; }
-      100% { transform: translateY(100vh); opacity: 0; }
-    }
-  `;
-
-    const sunPulseKeyframes = `
-    @keyframes sunPulse {
-      0% {
-        box-shadow: 
-          0 0 20px rgba(255, 215, 0, 0.4),
-          0 0 40px rgba(255, 165, 0, 0.3),
-          0 0 60px rgba(255, 140, 0, 0.2);
-        transform: translate(-50%, -50%) scale(1);
-      }
-      50% {
-        box-shadow: 
-          0 0 40px rgba(255, 215, 0, 0.8),
-          0 0 80px rgba(255, 165, 0, 0.6),
-          0 0 120px rgba(255, 140, 0, 0.4),
-          0 0 160px rgba(255, 140, 0, 0.2);
-        transform: translate(-50%, -50%) scale(1.1);
-      }
-      100% {
-        box-shadow: 
-          0 0 20px rgba(255, 215, 0, 0.4),
-          0 0 40px rgba(255, 165, 0, 0.3),
-          0 0 60px rgba(255, 140, 0, 0.2);
-        transform: translate(-50%, -50%) scale(1);
-      }
-    }
-  `;
-
     return (
       <div
         style={{
@@ -287,7 +260,6 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
           width: "100vw",
           height: "100vh",
           overflow: "hidden",
-          background: "linear-gradient(to bottom, #1e3c72, #2a5298)",
         }}
       >
         {/* Inject keyframes */}
@@ -296,28 +268,10 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
           {lightningBoltKeyframes}
           {skyFlashKeyframes}
           {rainKeyframes}
-          {sunPulseKeyframes}
         </style>
 
         {/* Rain Animation */}
-        {Array.from({ length: 50 }, (_, i) => (
-          <div
-            key={`rain-${i}`}
-            style={{
-              position: "absolute",
-              top: "-10px",
-              left: `${Math.random() * 100}%`,
-              width: "2px",
-              height: `${20 + Math.random() * 30}px`,
-              background:
-                "linear-gradient(to bottom, rgba(173, 216, 230, 0.8), rgba(135, 206, 235, 0.4))",
-              borderRadius: "1px",
-              animation: `rainFall ${2 + Math.random() * 2}s linear infinite`,
-              animationDelay: `${Math.random() * 2}s`,
-              zIndex: 3,
-            }}
-          />
-        ))}
+        {renderRainAnimation()}
 
         {/* Sky flash effect */}
         <div
@@ -432,32 +386,6 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
               "0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(135, 206, 235, 0.2)",
           }}
         />
-
-        {/* Sun with pulsing glow */}
-        <div
-          style={{
-            position: "absolute",
-            top: "8%",
-            right: "8%",
-            width: "100px",
-            height: "100px",
-            zIndex: 1,
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              width: "50px",
-              height: "50px",
-              background:
-                "radial-gradient(circle, #FFD700 0%, #FFA500 70%, #FF8C00 100%)",
-              borderRadius: "50%",
-              animation: "sunPulse 3s ease-in-out infinite",
-            }}
-          />
-        </div>
       </div>
     );
   };
@@ -489,7 +417,7 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
 
   const getWeatherGradient = (conditionCode: number) => {
     if (stormCodes.has(conditionCode) || rainCodes.has(conditionCode)) {
-      return "linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #4a6741 100%)";
+      return "linear-gradient(135deg, #2c3e50 0%, #3a4a60 40%, #4b5d75 70%, #5c6e87 100%)";
     } else if (snowCodes.has(conditionCode)) {
       return "linear-gradient(135deg,rgb(198, 221, 241) 0%, #cce7ff 50%, #b3daff 100%)";
     } else if (cloudCodes.has(conditionCode)) {
