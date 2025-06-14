@@ -20,6 +20,7 @@ interface WeatherHeaderProps {
   suggestedCity: CitySuggestion[];
   loadingSuggestions: boolean;
   onCitySelect: (cityName: string) => void;
+  searchQuery: string;
 }
 
 const WeatherHeader: React.FC<WeatherHeaderProps> = ({
@@ -27,6 +28,7 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({
   suggestedCity,
   loadingSuggestions,
   onCitySelect,
+  searchQuery,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -153,19 +155,29 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({
 
             <Autocomplete
               open={open}
-              onOpen={() => setOpen(true)}
+              onOpen={() => {
+                if (searchQuery.trim() !== "") {
+                  setOpen(true);
+                }
+              }}
               onClose={() => setOpen(false)}
               loading={loadingSuggestions}
               options={Array.isArray(suggestedCity) ? suggestedCity : []}
               getOptionLabel={(option: CitySuggestion) =>
                 `${option.name}, ${option.region}, ${option.country}`
               }
-              onInputChange={(_, newInputValue) => {
-                setSearchQuery(newInputValue);
+              inputValue={searchQuery}
+              onInputChange={(_, newInputValue, reason) => {
+                if (reason !== "reset") {
+                  setSearchQuery(newInputValue);
+                  setOpen(newInputValue.trim() !== "");
+                }
               }}
               onChange={(_, selectedOption) => {
                 if (selectedOption) {
                   onCitySelect(selectedOption.name);
+                  setSearchQuery("");
+                  setOpen(false);
                 }
               }}
               renderInput={(params) => (

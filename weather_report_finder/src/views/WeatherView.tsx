@@ -180,6 +180,7 @@ const WeatherApp: React.FC = () => {
               suggestedCity={Array.isArray(suggestedCity) ? suggestedCity : []}
               loadingSuggestions={loadingSuggestions}
               onCitySelect={(cityName) => dispatch(fetchWeather(cityName))}
+              searchQuery={searchQuery}
             />
 
             {/* Main Weather Card */}

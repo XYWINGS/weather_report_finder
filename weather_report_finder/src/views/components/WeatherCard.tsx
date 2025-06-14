@@ -192,35 +192,18 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
 
         {/* Enhanced Subtitle */}
         {subtitle && (
-          <Box
+          <Typography
+            variant="caption"
             sx={{
-              position: "relative",
-              "&::before": {
-                content: '""',
-                position: "absolute",
-                top: -8,
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: 30,
-                height: 1,
-                background:
-                  "linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent)",
-              },
+              color: "rgba(255,255,255,0.8)",
+              fontWeight: 500,
+              textShadow: "1px 1px 2px rgba(0,0,0,0.2)",
+              letterSpacing: "0.3px",
+              fontSize: { xs: "0.75rem", sm: "0.8rem" },
             }}
           >
-            <Typography
-              variant="caption"
-              sx={{
-                color: "rgba(255,255,255,0.8)",
-                fontWeight: 500,
-                textShadow: "1px 1px 2px rgba(0,0,0,0.2)",
-                letterSpacing: "0.3px",
-                fontSize: { xs: "0.75rem", sm: "0.8rem" },
-              }}
-            >
-              {subtitle}
-            </Typography>
-          </Box>
+            {subtitle}
+          </Typography>
         )}
 
         {/* Subtle Accent Line */}

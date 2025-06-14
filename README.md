@@ -16,8 +16,7 @@ RainOrShine is a sleek, responsive weather web app that transforms raw weather c
 
 ### 1. Clone the repo
 
-git https://github.com/XYWINGS/weather_report_finder.git
-cd weather_report_finder
+https://github.com/XYWINGS/weather_report_finder.git
 
 ### 2. Install dependencies
 
@@ -37,9 +36,8 @@ npm run dev
 
 ## 🧠 How It Works
 
-- Weather API returns a `condition.code`
-- Code is matched against **pre-defined groups** (e.g., rainCodes, snowCodes, etc.)
-- UI updates:
+- Weather API returns a weather response for the users default location initially. After that users can get weather reports from typing and searching city names.
+- Weather condition code is matched against **pre-defined groups**
 
   - 🌈 **Gradient** background (`getWeatherGradient`)
   - 🎞️ **Animation** layer (`getWeatherAnimation`)
@@ -53,7 +51,7 @@ npm run dev
 - 🌈 MUI + Custom SVG Icons
 - 🔁 WeatherAPI
 - 🧪 TypeScript for type safety
-- 🧊 Redux for State Management
+- 🧊 Redux for state management
 
 ---
 
