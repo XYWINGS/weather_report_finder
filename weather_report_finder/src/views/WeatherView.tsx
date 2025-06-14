@@ -27,83 +27,99 @@ import {
   Speed,
   WbCloudy,
   LightMode,
+  CloudQueue,
+  BeachAccess,
 } from "@mui/icons-material";
-import { API_KEY, RequestState } from "@configs/types";
+import { RequestState } from "@configs/types";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { fetchWeather } from "@slices/weatherSlice";
-
-interface WeatherData {
-  location: string;
-  temperature: number;
-  condition: string;
-  humidity: number;
-  windSpeed: number;
-  uvIndex: number;
-  visibility: number;
-  feelsLike: number;
-  pressure: number;
-  lastUpdated: string;
-}
+import { getUserLocation } from "@configs/utils";
 
 const WeatherApp: React.FC = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const weatherDataResponse = useAppSelector(
     (state) => state.weather.weatherData
   );
-  const dispatch = useAppDispatch();
+  const dataLoadingState = useAppSelector((state) => state.weather.state);
 
   useEffect(() => {
-    dispatch(fetchWeather("Colombo"));
+    getUserLocation()
+      .then(({ lat, lon }) => {
+        dispatch(fetchWeather(`${lat},${lon}`));
+      })
+      .catch(() => {
+        dispatch(fetchWeather("Colombo"));
+      });
   }, [dispatch]);
-
-  const dataLoadingState = useAppSelector((state) => state.weather.state);
 
   useEffect(() => {
     if (dataLoadingState === RequestState.LOADING) {
       setLoading(true);
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, [dataLoadingState]);
 
-  useEffect(() => {
-    console.log("weatherDataResponse", weatherDataResponse);
-  }, [weatherDataResponse]);
-
-  // sample data
-  const weatherData: WeatherData = {
-    location: "Colombo, Sri Lanka",
-    temperature: 28,
-    condition: "Partly Cloudy",
-    humidity: 76,
-    windSpeed: 12,
-    uvIndex: 7,
-    visibility: 10,
-    feelsLike: 32,
-    pressure: 1013,
-    lastUpdated: "2025-06-13 14:30",
+  // Function to handle search
+  const handleSearch = (query: string) => {
+    if (query.trim()) {
+      dispatch(fetchWeather(query.trim()));
+    }
   };
 
-  const getWeatherIcon = (condition: string) => {
+  // Handle Enter key press in search
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch(searchQuery);
+    }
+  };
+
+  const getWeatherIcon = (condition: string, isDay: number) => {
     const iconProps = {
-      sx: { fontSize: { xs: 60, sm: 80 }, color: "#FFB74D" },
+      sx: { fontSize: { xs: 60, sm: 80 } },
     };
 
-    switch (condition.toLowerCase()) {
-      case "partly cloudy":
+    // Determine color based on day/night
+    const sunColor = isDay ? "#FFB74D" : "#FFA726";
+    const cloudColor = "#90A4AE";
+
+    const conditionLower = condition.toLowerCase();
+
+    if (conditionLower.includes("rain") || conditionLower.includes("drizzle")) {
+      return (
+        <BeachAccess
+          {...iconProps}
+          sx={{ ...iconProps.sx, color: "#42A5F5" }}
+        />
+      );
+    } else if (conditionLower.includes("cloud")) {
+      if (conditionLower.includes("partly")) {
         return (
-          <WbCloudy {...iconProps} sx={{ ...iconProps.sx, color: "#90A4AE" }} />
+          <WbCloudy
+            {...iconProps}
+            sx={{ ...iconProps.sx, color: cloudColor }}
+          />
         );
-      case "sunny":
-        return <WbSunny {...iconProps} />;
-      case "cloudy":
+      } else {
         return (
           <Cloud {...iconProps} sx={{ ...iconProps.sx, color: "#78909C" }} />
         );
-      default:
-        return <WbSunny {...iconProps} />;
+      }
+    } else if (
+      conditionLower.includes("sunny") ||
+      conditionLower.includes("clear")
+    ) {
+      return (
+        <WbSunny {...iconProps} sx={{ ...iconProps.sx, color: sunColor }} />
+      );
+    } else {
+      return (
+        <WbSunny {...iconProps} sx={{ ...iconProps.sx, color: sunColor }} />
+      );
     }
   };
 
@@ -205,6 +221,15 @@ const WeatherApp: React.FC = () => {
     </Card>
   );
 
+  // Format location display
+  const formatLocation = () => {
+    const { name, region, country } = weatherDataResponse.location;
+    if (region && region !== name) {
+      return `${name}, ${region}, ${country}`;
+    }
+    return `${name}, ${country}`;
+  };
+
   return (
     <Box
       sx={{
@@ -216,380 +241,517 @@ const WeatherApp: React.FC = () => {
         overflow: "hidden",
       }}
     >
-      <Box
-        sx={{
-          minHeight: "90%",
-          height: "100%",
-          width: "98%",
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          p: 2,
-          overflowX: "hidden",
-          overflowY: "auto",
-        }}
-      >
-        <Container maxWidth="lg">
-          {/* Header */}
-          <Box textAlign="center" mb={{ xs: 3, sm: 4 }}>
-            <Typography
-              variant={isMobile ? "h4" : "h3"}
-              fontWeight="bold"
-              color="white"
-              gutterBottom
+      {dataLoadingState === RequestState.SUCCEEDED && weatherDataResponse && (
+        <Box
+          sx={{
+            minHeight: "90%",
+            height: "100%",
+            width: "98%",
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            p: 2,
+            overflowX: "hidden",
+            overflowY: "auto",
+          }}
+        >
+          <Container maxWidth="lg">
+            {/* Header */}
+            <Box textAlign="center" mb={{ xs: 3, sm: 4 }}>
+              <Typography
+                variant={isMobile ? "h4" : "h3"}
+                fontWeight="bold"
+                color="white"
+                gutterBottom
+                sx={{
+                  textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
+                  mb: { xs: 1, sm: 2 },
+                }}
+              >
+                Weather Reporter
+              </Typography>
+              <Typography
+                variant={isMobile ? "body1" : "h6"}
+                color="rgba(255,255,255,0.9)"
+                sx={{
+                  textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
+                  px: { xs: 2, sm: 0 },
+                }}
+              >
+                Real-time weather information at your fingertips
+              </Typography>
+            </Box>
+
+            {/* Search Bar */}
+            <Box mb={{ xs: 3, sm: 4 }}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                placeholder="Search for a city..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={handleKeyPress}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search color="action" />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  maxWidth: 600,
+                  mx: "auto",
+                  display: "block",
+                  "& .MuiOutlinedInput-root": {
+                    bgcolor: "rgba(255,255,255,0.95)",
+                    backdropFilter: "blur(10px)",
+                    borderRadius: 2,
+                    "&:hover fieldset": {
+                      borderColor: "primary.main",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "primary.main",
+                    },
+                  },
+                }}
+              />
+            </Box>
+
+            {/* Main Weather Card */}
+            <Card
+              elevation={8}
               sx={{
-                textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
-                mb: { xs: 1, sm: 2 },
+                mb: { xs: 3, sm: 4 },
+                background: "rgba(255,255,255,0.15)",
+                backdropFilter: "blur(20px)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                borderRadius: 3,
               }}
             >
-              Weather Reporter
-            </Typography>
-            <Typography
-              variant={isMobile ? "body1" : "h6"}
-              color="rgba(255,255,255,0.9)"
-              sx={{
-                textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
-                px: { xs: 2, sm: 0 },
-              }}
-            >
-              Real-time weather information at your fingertips
-            </Typography>
-          </Box>
+              <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
+                <Grid container spacing={3} alignItems="center">
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Box display="flex" alignItems="center" mb={2}>
+                      <LocationOn sx={{ color: "white", mr: 1 }} />
+                      <Typography
+                        variant={isMobile ? "h6" : "h5"}
+                        color="white"
+                        fontWeight="bold"
+                      >
+                        {formatLocation()}
+                      </Typography>
+                    </Box>
 
-          {/* Search Bar */}
-          <Box mb={{ xs: 3, sm: 4 }}>
-            <TextField
-              fullWidth
-              variant="outlined"
-              placeholder="Search for a city..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search color="action" />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                maxWidth: 600,
-                mx: "auto",
-                display: "block",
-                "& .MuiOutlinedInput-root": {
-                  bgcolor: "rgba(255,255,255,0.95)",
-                  backdropFilter: "blur(10px)",
-                  borderRadius: 2,
-                  "&:hover fieldset": {
-                    borderColor: "primary.main",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "primary.main",
-                  },
-                },
-              }}
-            />
-          </Box>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      mb={2}
+                      flexDirection={{ xs: "column", sm: "row" }}
+                      textAlign={{ xs: "center", sm: "left" }}
+                    >
+                      <Typography
+                        variant="h1"
+                        color="white"
+                        fontWeight="300"
+                        sx={{
+                          fontSize: { xs: "3rem", sm: "4rem", md: "5rem" },
+                          lineHeight: 1,
+                          mr: { xs: 0, sm: 2 },
+                          mb: { xs: 1, sm: 0 },
+                        }}
+                      >
+                        {Math.round(weatherDataResponse.current.temp_c)}°
+                      </Typography>
+                      <Box>
+                        {getWeatherIcon(
+                          weatherDataResponse.current.condition.text,
+                          weatherDataResponse.current.is_day
+                        )}
+                      </Box>
+                    </Box>
 
-          {/* Main Weather Card */}
-          <Card
-            elevation={8}
-            sx={{
-              mb: { xs: 3, sm: 4 },
-              background: "rgba(255,255,255,0.15)",
-              backdropFilter: "blur(20px)",
-              border: "1px solid rgba(255,255,255,0.2)",
-              borderRadius: 3,
-            }}
-          >
-            <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
-              <Grid container spacing={3} alignItems="center">
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Box display="flex" alignItems="center" mb={2}>
-                    <LocationOn sx={{ color: "white", mr: 1 }} />
                     <Typography
                       variant={isMobile ? "h6" : "h5"}
+                      color="rgba(255,255,255,0.9)"
+                      gutterBottom
+                      textAlign={{ xs: "center", sm: "left" }}
+                    >
+                      {weatherDataResponse.current.condition.text}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      color="rgba(255,255,255,0.7)"
+                      textAlign={{ xs: "center", sm: "left" }}
+                    >
+                      Feels like{" "}
+                      {Math.round(weatherDataResponse.current.feelslike_c)}°C
+                    </Typography>
+                  </Grid>
+
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Box textAlign={{ xs: "center", md: "right" }}>
+                      <Chip
+                        label={`Last updated: ${
+                          weatherDataResponse.current.last_updated ||
+                          "Loading..."
+                        }`}
+                        size={isMobile ? "small" : "medium"}
+                        sx={{
+                          bgcolor: "rgba(255,255,255,0.2)",
+                          color: "white",
+                          mb: 2,
+                          "& .MuiChip-label": {
+                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                          },
+                        }}
+                      />
+                      {loading && (
+                        <Box display="flex" justifyContent="center" mt={2}>
+                          <CircularProgress size={24} sx={{ color: "white" }} />
+                        </Box>
+                      )}
+                    </Box>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+
+            {/* Weather Details Grid */}
+            <Grid container spacing={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
+              <Grid size={{ xs: 6, md: 3, sm: 6 }}>
+                <WeatherCard
+                  icon={<Grain />}
+                  title="Humidity"
+                  value={weatherDataResponse.current.humidity}
+                  unit="%"
+                  color="info"
+                />
+              </Grid>
+
+              <Grid size={{ xs: 6, md: 3, sm: 6 }}>
+                <WeatherCard
+                  icon={<Air />}
+                  title="Wind Speed"
+                  value={Math.round(weatherDataResponse.current.wind_kph)}
+                  unit=" km/h"
+                  color="success"
+                  subtitle={`${weatherDataResponse.current.wind_dir} ${weatherDataResponse.current.wind_degree}°`}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 6, md: 3, sm: 6 }}>
+                <WeatherCard
+                  icon={<WbSunny />}
+                  title="UV Index"
+                  value={weatherDataResponse.current.uv}
+                  unit=""
+                  color="warning"
+                  subtitle={getUVIndexText(weatherDataResponse.current.uv)}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 6, md: 3, sm: 6 }}>
+                <WeatherCard
+                  icon={<Visibility />}
+                  title="Visibility"
+                  value={weatherDataResponse.current.vis_km}
+                  unit=" km"
+                  color="secondary"
+                />
+              </Grid>
+            </Grid>
+
+            {/* Additional Weather Info */}
+            <Grid container spacing={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Card
+                  elevation={3}
+                  sx={{
+                    height: "100%",
+                    background: "rgba(255,255,255,0.15)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                  }}
+                >
+                  <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                    <Box display="flex" alignItems="center" mb={2}>
+                      <Thermostat sx={{ color: "white", mr: 1 }} />
+                      <Typography
+                        variant={isMobile ? "h6" : "h5"}
+                        color="white"
+                        fontWeight={500}
+                      >
+                        Temperature Details
+                      </Typography>
+                    </Box>
+                    <Box display="flex" justifyContent="space-between" mb={2}>
+                      <Typography color="rgba(255,255,255,0.8)" variant="body1">
+                        Current
+                      </Typography>
+                      <Typography color="white" fontWeight="bold" variant="h6">
+                        {Math.round(weatherDataResponse.current.temp_c)}°C
+                      </Typography>
+                    </Box>
+                    <Box display="flex" justifyContent="space-between" mb={2}>
+                      <Typography color="rgba(255,255,255,0.8)" variant="body1">
+                        Feels like
+                      </Typography>
+                      <Typography color="white" fontWeight="bold" variant="h6">
+                        {Math.round(weatherDataResponse.current.feelslike_c)}°C
+                      </Typography>
+                    </Box>
+                    <Box display="flex" justifyContent="space-between">
+                      <Typography color="rgba(255,255,255,0.8)" variant="body1">
+                        Heat Index
+                      </Typography>
+                      <Typography color="white" fontWeight="bold" variant="h6">
+                        {Math.round(weatherDataResponse.current.heatindex_c)}°C
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Card
+                  elevation={3}
+                  sx={{
+                    height: "100%",
+                    background: "rgba(255,255,255,0.15)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                  }}
+                >
+                  <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                    <Box display="flex" alignItems="center" mb={2}>
+                      <Speed sx={{ color: "white", mr: 1 }} />
+                      <Typography
+                        variant={isMobile ? "h6" : "h5"}
+                        color="white"
+                        fontWeight={500}
+                      >
+                        Atmospheric Pressure
+                      </Typography>
+                    </Box>
+                    <Typography
+                      variant={isMobile ? "h4" : "h3"}
                       color="white"
                       fontWeight="bold"
+                      gutterBottom
                     >
-                      {weatherData.location}
+                      {Math.round(weatherDataResponse.current.pressure_mb)}
+                      <Typography
+                        component="span"
+                        variant={isMobile ? "h6" : "h5"}
+                        color="rgba(255,255,255,0.8)"
+                        sx={{ ml: 1 }}
+                      >
+                        mb
+                      </Typography>
                     </Typography>
-                  </Box>
+                    <Typography variant="body2" color="rgba(255,255,255,0.7)">
+                      Standard atmospheric pressure •{" "}
+                      {weatherDataResponse.current.pressure_in}" Hg
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
 
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    mb={2}
-                    flexDirection={{ xs: "column", sm: "row" }}
-                    textAlign={{ xs: "center", sm: "left" }}
-                  >
+            {/* Precipitation and Cloud Info */}
+            <Grid container spacing={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Card
+                  elevation={3}
+                  sx={{
+                    height: "100%",
+                    background: "rgba(255,255,255,0.15)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                  }}
+                >
+                  <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                    <Box display="flex" alignItems="center" mb={2}>
+                      <BeachAccess sx={{ color: "white", mr: 1 }} />
+                      <Typography
+                        variant={isMobile ? "h6" : "h5"}
+                        color="white"
+                        fontWeight={500}
+                      >
+                        Precipitation
+                      </Typography>
+                    </Box>
                     <Typography
-                      variant="h1"
+                      variant={isMobile ? "h4" : "h3"}
                       color="white"
-                      fontWeight="300"
-                      sx={{
-                        fontSize: { xs: "3rem", sm: "4rem", md: "5rem" },
-                        lineHeight: 1,
-                        mr: { xs: 0, sm: 2 },
-                        mb: { xs: 1, sm: 0 },
-                      }}
+                      fontWeight="bold"
+                      gutterBottom
                     >
-                      {weatherData.temperature}°
+                      {weatherDataResponse.current.precip_mm}
+                      <Typography
+                        component="span"
+                        variant={isMobile ? "h6" : "h5"}
+                        color="rgba(255,255,255,0.8)"
+                        sx={{ ml: 1 }}
+                      >
+                        mm
+                      </Typography>
                     </Typography>
-                    <Box>{getWeatherIcon(weatherData.condition)}</Box>
-                  </Box>
+                    <Typography variant="body2" color="rgba(255,255,255,0.7)">
+                      Last hour • {weatherDataResponse.current.precip_in}"
+                      inches
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
 
-                  <Typography
-                    variant={isMobile ? "h6" : "h5"}
-                    color="rgba(255,255,255,0.9)"
-                    gutterBottom
-                    textAlign={{ xs: "center", sm: "left" }}
-                  >
-                    {weatherData.condition}
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    color="rgba(255,255,255,0.7)"
-                    textAlign={{ xs: "center", sm: "left" }}
-                  >
-                    Feels like {weatherData.feelsLike}°C
-                  </Typography>
-                </Grid>
-
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Box textAlign={{ xs: "center", md: "right" }}>
-                    <Chip
-                      label={`Last updated: ${weatherData.lastUpdated}`}
-                      size={isMobile ? "small" : "medium"}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Card
+                  elevation={3}
+                  sx={{
+                    height: "100%",
+                    background: "rgba(255,255,255,0.15)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                  }}
+                >
+                  <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                    <Box display="flex" alignItems="center" mb={2}>
+                      <CloudQueue sx={{ color: "white", mr: 1 }} />
+                      <Typography
+                        variant={isMobile ? "h6" : "h5"}
+                        color="white"
+                        fontWeight={500}
+                      >
+                        Cloud Cover
+                      </Typography>
+                    </Box>
+                    <Typography
+                      variant={isMobile ? "h4" : "h3"}
+                      color="white"
+                      fontWeight="bold"
+                      gutterBottom
+                    >
+                      {weatherDataResponse.current.cloud}
+                      <Typography
+                        component="span"
+                        variant={isMobile ? "h6" : "h5"}
+                        color="rgba(255,255,255,0.8)"
+                        sx={{ ml: 1 }}
+                      >
+                        %
+                      </Typography>
+                    </Typography>
+                    <LinearProgress
+                      variant="determinate"
+                      value={weatherDataResponse.current.cloud}
                       sx={{
-                        bgcolor: "rgba(255,255,255,0.2)",
-                        color: "white",
-                        mb: 2,
-                        "& .MuiChip-label": {
-                          fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                        mt: 1,
+                        height: 8,
+                        borderRadius: 4,
+                        backgroundColor: "rgba(255,255,255,0.2)",
+                        "& .MuiLinearProgress-bar": {
+                          backgroundColor: "#90A4AE",
+                          borderRadius: 4,
                         },
                       }}
                     />
-                    {loading && (
-                      <Box display="flex" justifyContent="center" mt={2}>
-                        <CircularProgress size={24} sx={{ color: "white" }} />
-                      </Box>
-                    )}
-                  </Box>
-                </Grid>
+                  </CardContent>
+                </Card>
               </Grid>
-            </CardContent>
-          </Card>
-
-          {/* Weather Details Grid */}
-          <Grid container spacing={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
-            <Grid size={{ xs: 6, md: 3, sm: 6 }}>
-              <WeatherCard
-                icon={<Grain />}
-                title="Humidity"
-                value={weatherData.humidity}
-                unit="%"
-                color="info"
-              />
             </Grid>
 
-            <Grid size={{ xs: 6, md: 3, sm: 6 }}>
-              <WeatherCard
-                icon={<Air />}
-                title="Wind Speed"
-                value={weatherData.windSpeed}
-                unit=" km/h"
-                color="success"
-              />
-            </Grid>
-
-            <Grid size={{ xs: 6, md: 3, sm: 6 }}>
-              <WeatherCard
-                icon={<WbSunny />}
-                title="UV Index"
-                value={weatherData.uvIndex}
-                unit=""
-                color="warning"
-                subtitle={getUVIndexText(weatherData.uvIndex)}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 6, md: 3, sm: 6 }}>
-              <WeatherCard
-                icon={<Visibility />}
-                title="Visibility"
-                value={weatherData.visibility}
-                unit=" km"
-                color="secondary"
-              />
-            </Grid>
-          </Grid>
-
-          {/* Additional Weather Info */}
-          <Grid container spacing={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Card
-                elevation={3}
-                sx={{
-                  height: "100%",
-                  background: "rgba(255,255,255,0.15)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                }}
-              >
-                <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-                  <Box display="flex" alignItems="center" mb={2}>
-                    <Thermostat sx={{ color: "white", mr: 1 }} />
-                    <Typography
-                      variant={isMobile ? "h6" : "h5"}
-                      color="white"
-                      fontWeight={500}
-                    >
-                      Temperature Details
+            {/* UV Index Detail Card */}
+            <Card
+              elevation={3}
+              sx={{
+                mb: { xs: 3, sm: 4 },
+                background: `linear-gradient(135deg, ${getUVIndexColor(
+                  weatherDataResponse.current.uv
+                )}20 0%, ${getUVIndexColor(
+                  weatherDataResponse.current.uv
+                )}10 100%)`,
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255,255,255,0.2)",
+              }}
+            >
+              <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                <Grid container alignItems="center" spacing={2}>
+                  <Grid size={{ xs: 12, sm: 8 }}>
+                    <Box display="flex" alignItems="center" mb={1}>
+                      <LightMode
+                        sx={{
+                          color: getUVIndexColor(
+                            weatherDataResponse.current.uv
+                          ),
+                          mr: 1,
+                        }}
+                      />
+                      <Typography
+                        variant={isMobile ? "h6" : "h5"}
+                        color="white"
+                        fontWeight={500}
+                      >
+                        UV Index Details
+                      </Typography>
+                    </Box>
+                    <Typography variant="body1" color="rgba(255,255,255,0.8)">
+                      Current UV radiation level
                     </Typography>
-                  </Box>
-                  <Box display="flex" justifyContent="space-between" mb={2}>
-                    <Typography color="rgba(255,255,255,0.8)" variant="body1">
-                      Current
-                    </Typography>
-                    <Typography color="white" fontWeight="bold" variant="h6">
-                      {weatherData.temperature}°C
-                    </Typography>
-                  </Box>
-                  <Box display="flex" justifyContent="space-between">
-                    <Typography color="rgba(255,255,255,0.8)" variant="body1">
-                      Feels like
-                    </Typography>
-                    <Typography color="white" fontWeight="bold" variant="h6">
-                      {weatherData.feelsLike}°C
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Card
-                elevation={3}
-                sx={{
-                  height: "100%",
-                  background: "rgba(255,255,255,0.15)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                }}
-              >
-                <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-                  <Box display="flex" alignItems="center" mb={2}>
-                    <Speed sx={{ color: "white", mr: 1 }} />
-                    <Typography
-                      variant={isMobile ? "h6" : "h5"}
-                      color="white"
-                      fontWeight={500}
-                    >
-                      Atmospheric Pressure
-                    </Typography>
-                  </Box>
-                  <Typography
-                    variant={isMobile ? "h4" : "h3"}
-                    color="white"
-                    fontWeight="bold"
-                    gutterBottom
-                  >
-                    {weatherData.pressure}
-                    <Typography
-                      component="span"
-                      variant={isMobile ? "h6" : "h5"}
-                      color="rgba(255,255,255,0.8)"
-                      sx={{ ml: 1 }}
-                    >
-                      hPa
-                    </Typography>
-                  </Typography>
-                  <Typography variant="body2" color="rgba(255,255,255,0.7)">
-                    Standard atmospheric pressure
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-
-          {/* UV Index Detail Card */}
-          <Card
-            elevation={3}
-            sx={{
-              mb: { xs: 3, sm: 4 },
-              background: `linear-gradient(135deg, ${getUVIndexColor(
-                weatherData.uvIndex
-              )}20 0%, ${getUVIndexColor(weatherData.uvIndex)}10 100%)`,
-              backdropFilter: "blur(10px)",
-              border: "1px solid rgba(255,255,255,0.2)",
-            }}
-          >
-            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-              <Grid container alignItems="center" spacing={2}>
-                <Grid size={{ xs: 12, sm: 8 }}>
-                  <Box display="flex" alignItems="center" mb={1}>
-                    <LightMode
+                    <LinearProgress
+                      variant="determinate"
+                      value={(weatherDataResponse.current.uv / 11) * 100}
                       sx={{
-                        color: getUVIndexColor(weatherData.uvIndex),
-                        mr: 1,
-                      }}
-                    />
-                    <Typography
-                      variant={isMobile ? "h6" : "h5"}
-                      color="white"
-                      fontWeight={500}
-                    >
-                      UV Index Details
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1" color="rgba(255,255,255,0.8)">
-                    Current UV radiation level
-                  </Typography>
-                  <LinearProgress
-                    variant="determinate"
-                    value={(weatherData.uvIndex / 11) * 100}
-                    sx={{
-                      mt: 1,
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: "rgba(255,255,255,0.2)",
-                      "& .MuiLinearProgress-bar": {
-                        backgroundColor: getUVIndexColor(weatherData.uvIndex),
+                        mt: 1,
+                        height: 8,
                         borderRadius: 4,
-                      },
-                    }}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 4 }}>
-                  <Box textAlign={{ xs: "center", sm: "right" }}>
-                    <Typography
-                      variant={isMobile ? "h3" : "h2"}
-                      fontWeight="bold"
-                      sx={{ color: getUVIndexColor(weatherData.uvIndex) }}
-                      gutterBottom
-                    >
-                      {weatherData.uvIndex}
-                    </Typography>
-                    <Chip
-                      label={getUVIndexText(weatherData.uvIndex)}
-                      sx={{
-                        backgroundColor: getUVIndexColor(weatherData.uvIndex),
-                        color: "white",
-                        fontWeight: "bold",
+                        backgroundColor: "rgba(255,255,255,0.2)",
+                        "& .MuiLinearProgress-bar": {
+                          backgroundColor: getUVIndexColor(
+                            weatherDataResponse.current.uv
+                          ),
+                          borderRadius: 4,
+                        },
                       }}
                     />
-                  </Box>
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 4 }}>
+                    <Box textAlign={{ xs: "center", sm: "right" }}>
+                      <Typography
+                        variant={isMobile ? "h3" : "h2"}
+                        fontWeight="bold"
+                        sx={{
+                          color: getUVIndexColor(
+                            weatherDataResponse.current.uv
+                          ),
+                        }}
+                        gutterBottom
+                      >
+                        {weatherDataResponse.current.uv}
+                      </Typography>
+                      <Chip
+                        label={getUVIndexText(weatherDataResponse.current.uv)}
+                        sx={{
+                          backgroundColor: getUVIndexColor(
+                            weatherDataResponse.current.uv
+                          ),
+                          color: "white",
+                          fontWeight: "bold",
+                        }}
+                      />
+                    </Box>
+                  </Grid>
                 </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          {/* Footer */}
-          <Box textAlign="center">
-            <Typography variant="body2" color="rgba(255,255,255,0.7)">
-              Weather data provided by WeatherAPI.com
-            </Typography>
-          </Box>
-        </Container>
-      </Box>
+            {/* Footer */}
+            <Box textAlign="center">
+              <Typography variant="body2" color="rgba(255,255,255,0.7)">
+                Weather data provided by WeatherAPI.com
+              </Typography>
+            </Box>
+          </Container>
+        </Box>
+      )}
     </Box>
   );
 };
