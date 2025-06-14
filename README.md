@@ -1,4 +1,4 @@
-````markdown
+
 ## 🌤️ RainOrShine — Dynamic Weather Visualizer
 
 RainOrShine is a sleek, responsive weather web app that transforms raw weather conditions into rich visual experiences. From stormy skies to sunny days, the UI adjusts with gradients, animations, and icons — all driven by condition codes.
@@ -62,5 +62,3 @@ npm run dev
 Open an issue or submit a PR. We welcome feedback and improvements!
 
 > Built with ❤️ and curiosity.
-
-```
