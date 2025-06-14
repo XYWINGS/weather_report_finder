@@ -24,11 +24,11 @@ import {
   Container,
   Typography,
   CardContent,
+  Autocomplete,
   useMediaQuery,
   InputAdornment,
   LinearProgress,
   CircularProgress,
-  Autocomplete,
 } from "@mui/material";
 import { getUserLocation } from "@configs/utils";
 import React, { useEffect, useState } from "react";
@@ -37,6 +37,7 @@ import { fetchLocation } from "@slices/locationSlice";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { WeatherStatusComponent } from "./WeatherStatusComponent";
 import { RequestState, type CitySuggestion } from "@configs/types";
+import { WeatherBackgroundAnimation } from "./components/WeatherBackgroundAnimation";
 
 const WeatherApp: React.FC = () => {
   const theme = useTheme();
@@ -56,6 +57,8 @@ const WeatherApp: React.FC = () => {
     (state) => state.location.state
   );
   const loadingSuggestions = suggestedCityLoadingSate === RequestState.LOADING;
+  const conditionLower =
+    weatherDataResponse?.current?.condition?.text.toLowerCase() ?? "";
 
   useEffect(() => {
     if (dataLoadingState === RequestState.LOADING) {
@@ -83,9 +86,7 @@ const WeatherApp: React.FC = () => {
       });
   }, [dispatch]);
 
-  // Set data loading state
-
-  const getWeatherIcon = (condition: string, isDay: number) => {
+  const getWeatherIcon = (isDay: number) => {
     const iconProps = {
       sx: { fontSize: { xs: 60, sm: 80 } },
     };
@@ -93,8 +94,6 @@ const WeatherApp: React.FC = () => {
     // Determine color based on day/night
     const sunColor = isDay ? "#FFB74D" : "#FFA726";
     const cloudColor = "#90A4AE";
-
-    const conditionLower = condition.toLowerCase();
 
     if (conditionLower.includes("rain") || conditionLower.includes("drizzle")) {
       return (
@@ -250,26 +249,15 @@ const WeatherApp: React.FC = () => {
     >
       {dataLoadingState === RequestState.LOADING && <WeatherStatusComponent />}
 
-      {dataLoadingState === RequestState.FAILED ||
-        (dataLoadingState === RequestState.IDLE && (
-          <WeatherStatusComponent
-            isError={true}
-            onRetry={() => window.location.reload()}
-          />
-        ))}
+      {dataLoadingState === RequestState.FAILED && (
+        <WeatherStatusComponent
+          isError={true}
+          onRetry={() => window.location.reload()}
+        />
+      )}
 
       {dataLoadingState === RequestState.SUCCEEDED && weatherDataResponse && (
-        <Box
-          sx={{
-            minHeight: "90%",
-            height: "100%",
-            width: "98%",
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-            p: 2,
-            overflowX: "hidden",
-            overflowY: "auto",
-          }}
-        >
+        <WeatherBackgroundAnimation condition={conditionLower}>
           <Container maxWidth="lg">
             {/* Header */}
             <Box textAlign="center" mb={{ xs: 3, sm: 4 }}>
@@ -283,7 +271,7 @@ const WeatherApp: React.FC = () => {
                   mb: { xs: 1, sm: 2 },
                 }}
               >
-                Weather Reporter
+                Rain Or Shine
               </Typography>
               <Typography
                 variant={isMobile ? "body1" : "h6"}
@@ -308,7 +296,7 @@ const WeatherApp: React.FC = () => {
                 getOptionLabel={(option: CitySuggestion) =>
                   `${option.name}, ${option.region}, ${option.country}`
                 }
-                onInputChange={(event, newInputValue) => {
+                onInputChange={(_, newInputValue) => {
                   setSearchQuery(newInputValue);
                 }}
                 onChange={(e, selectedOption) => {
@@ -402,10 +390,7 @@ const WeatherApp: React.FC = () => {
                         {Math.round(weatherDataResponse.current.temp_c)}°
                       </Typography>
                       <Box>
-                        {getWeatherIcon(
-                          weatherDataResponse.current.condition.text,
-                          weatherDataResponse.current.is_day
-                        )}
+                        {getWeatherIcon(weatherDataResponse.current.is_day)}
                       </Box>
                     </Box>
 
@@ -488,7 +473,7 @@ const WeatherApp: React.FC = () => {
               </Grid>
             </Grid>
 
-                        {/* UV Index Detail Card */}
+            {/* UV Index Detail Card */}
             <Card
               elevation={3}
               sx={{
@@ -779,7 +764,7 @@ const WeatherApp: React.FC = () => {
               </Typography>
             </Box>
           </Container>
-        </Box>
+        </WeatherBackgroundAnimation>
       )}
     </Box>
   );
