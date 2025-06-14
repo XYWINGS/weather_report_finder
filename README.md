@@ -1,9 +1,8 @@
 ````markdown
-# 🌤️ RainOrShine — Dynamic Weather Visualizer
+## 🌤️ RainOrShine — Dynamic Weather Visualizer
 
 RainOrShine is a sleek, responsive weather web app that transforms raw weather conditions into rich visual experiences. From stormy skies to sunny days, the UI adjusts with gradients, animations, and icons — all driven by condition codes.
 
----
 
 ## ✨ Features
 
@@ -13,17 +12,12 @@ RainOrShine is a sleek, responsive weather web app that transforms raw weather c
 - 🌐 **City-based weather fetcher** — test different conditions using real-world locations
 - 📱 **Responsive design** for mobile & desktop
 
----
-
 ## 🚀 Getting Started
 
 ### 1. Clone the repo
 
-```bash
 git https://github.com/XYWINGS/weather_report_finder.git
 cd weather_report_finder
-```
-````
 
 ### 2. Install dependencies
 
