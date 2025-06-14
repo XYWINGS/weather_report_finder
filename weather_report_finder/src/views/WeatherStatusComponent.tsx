@@ -1,22 +1,22 @@
 import React from "react";
 import {
   Box,
-  Typography,
-  Container,
+  Button,
   useTheme,
+  Container,
+  keyframes,
+  Typography,
   useMediaQuery,
   LinearProgress,
-  keyframes,
-  Button,
 } from "@mui/material";
-import { 
-  WbSunny, 
-  Cloud, 
-  Air, 
-  WbCloudy, 
-  ErrorOutline, 
+import {
+  Air,
+  Cloud,
+  WbSunny,
   Warning,
-  Refresh 
+  Refresh,
+  WbCloudy,
+  ErrorOutline,
 } from "@mui/icons-material";
 
 // Loading animation keyframes
@@ -212,8 +212,8 @@ export const WeatherStatusComponent: React.FC<WeatherStatusProps> = ({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                animation: isError 
-                  ? `${shake} 0.5s ease-in-out 3` 
+                animation: isError
+                  ? `${shake} 0.5s ease-in-out 3`
                   : `${spin} 3s linear infinite`,
                 backdropFilter: "blur(10px)",
               }}
@@ -227,7 +227,7 @@ export const WeatherStatusComponent: React.FC<WeatherStatusProps> = ({
                 position: "absolute",
                 width: "100%",
                 height: "100%",
-                animation: isError 
+                animation: isError
                   ? `${pulse} 2s ease-in-out infinite`
                   : `${spin} 8s linear infinite reverse`,
               }}
@@ -284,9 +284,9 @@ export const WeatherStatusComponent: React.FC<WeatherStatusProps> = ({
             <Typography
               variant="body1"
               color="rgba(255,255,255,0.8)"
-              sx={{ 
+              sx={{
                 mb: 3,
-                fontStyle: "italic" 
+                fontStyle: "italic",
               }}
             >
               {errorMessage}
@@ -344,10 +344,9 @@ export const WeatherStatusComponent: React.FC<WeatherStatusProps> = ({
             color="rgba(255,255,255,0.7)"
             sx={{ mt: 3 }}
           >
-            {isError 
-              ? "Please check your connection and try again" 
-              : "Fetching the latest weather information..."
-            }
+            {isError
+              ? "Please check your connection and try again"
+              : "Fetching the latest weather information..."}
           </Typography>
         </Box>
       </Container>
