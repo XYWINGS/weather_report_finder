@@ -30,13 +30,20 @@ import {
   LinearProgress,
   CircularProgress,
 } from "@mui/material";
+import {
+  rainCodes,
+  clearCodes,
+  cloudCodes,
+  RequestState,
+  partlyCloudyCodes,
+  type CitySuggestion,
+} from "@configs/types";
 import { getUserLocation } from "@configs/utils";
 import React, { useEffect, useState } from "react";
 import { fetchWeather } from "@slices/weatherSlice";
 import { fetchLocation } from "@slices/locationSlice";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { WeatherStatusComponent } from "./WeatherStatusComponent";
-import { RequestState, type CitySuggestion } from "@configs/types";
 import { WeatherBackgroundAnimation } from "./components/WeatherBackgroundAnimation";
 
 const WeatherApp: React.FC = () => {
@@ -57,8 +64,7 @@ const WeatherApp: React.FC = () => {
     (state) => state.location.state
   );
   const loadingSuggestions = suggestedCityLoadingSate === RequestState.LOADING;
-  const conditionLower =
-    weatherDataResponse?.current?.condition?.text.toLowerCase() ?? "";
+  const conditionCode = weatherDataResponse?.current?.condition?.code ?? 1000;
 
   useEffect(() => {
     if (dataLoadingState === RequestState.LOADING) {
@@ -86,24 +92,66 @@ const WeatherApp: React.FC = () => {
       });
   }, [dispatch]);
 
-  const getWeatherIcon = (isDay: number) => {
+  // const getWeatherIcon = (isDay: number) => {
+  //   const iconProps = {
+  //     sx: { fontSize: { xs: 60, sm: 80 } },
+  //   };
+
+  //   // Determine color based on day/night
+  //   const sunColor = isDay ? "#FFB74D" : "#FFA726";
+  //   const cloudColor = "#90A4AE";
+
+  //   if (conditionCode.includes("rain") || conditionCode.includes("drizzle")) {
+  //     return (
+  //       <BeachAccess
+  //         {...iconProps}
+  //         sx={{ ...iconProps.sx, color: "#42A5F5" }}
+  //       />
+  //     );
+  //   } else if (conditionCode.includes("cloud")) {
+  //     if (conditionCode.includes("partly")) {
+  //       return (
+  //         <WbCloudy
+  //           {...iconProps}
+  //           sx={{ ...iconProps.sx, color: cloudColor }}
+  //         />
+  //       );
+  //     } else {
+  //       return (
+  //         <Cloud {...iconProps} sx={{ ...iconProps.sx, color: "#78909C" }} />
+  //       );
+  //     }
+  //   } else if (
+  //     conditionCode.includes("sunny") ||
+  //     conditionCode.includes("clear")
+  //   ) {
+  //     return (
+  //       <WbSunny {...iconProps} sx={{ ...iconProps.sx, color: sunColor }} />
+  //     );
+  //   } else {
+  //     return (
+  //       <WbSunny {...iconProps} sx={{ ...iconProps.sx, color: sunColor }} />
+  //     );
+  //   }
+  // };
+
+  const getWeatherIcon = (conditionCode: number, isDay: number) => {
     const iconProps = {
       sx: { fontSize: { xs: 60, sm: 80 } },
     };
 
-    // Determine color based on day/night
     const sunColor = isDay ? "#FFB74D" : "#FFA726";
     const cloudColor = "#90A4AE";
 
-    if (conditionLower.includes("rain") || conditionLower.includes("drizzle")) {
+    if (rainCodes.has(conditionCode)) {
       return (
         <BeachAccess
           {...iconProps}
           sx={{ ...iconProps.sx, color: "#42A5F5" }}
         />
       );
-    } else if (conditionLower.includes("cloud")) {
-      if (conditionLower.includes("partly")) {
+    } else if (cloudCodes.has(conditionCode)) {
+      if (partlyCloudyCodes.has(conditionCode)) {
         return (
           <WbCloudy
             {...iconProps}
@@ -115,18 +163,14 @@ const WeatherApp: React.FC = () => {
           <Cloud {...iconProps} sx={{ ...iconProps.sx, color: "#78909C" }} />
         );
       }
-    } else if (
-      conditionLower.includes("sunny") ||
-      conditionLower.includes("clear")
-    ) {
-      return (
-        <WbSunny {...iconProps} sx={{ ...iconProps.sx, color: sunColor }} />
-      );
-    } else {
+    } else if (clearCodes.has(conditionCode)) {
       return (
         <WbSunny {...iconProps} sx={{ ...iconProps.sx, color: sunColor }} />
       );
     }
+
+    // Default fallback
+    return <WbSunny {...iconProps} sx={{ ...iconProps.sx, color: sunColor }} />;
   };
 
   const getUVIndexColor = (uvIndex: number): string => {
@@ -257,7 +301,7 @@ const WeatherApp: React.FC = () => {
       )}
 
       {dataLoadingState === RequestState.SUCCEEDED && weatherDataResponse && (
-        <WeatherBackgroundAnimation condition={conditionLower}>
+        <WeatherBackgroundAnimation condition={conditionCode}>
           <Container maxWidth="lg">
             {/* Header */}
             <Box textAlign="center" mb={{ xs: 3, sm: 4 }}>
@@ -390,7 +434,10 @@ const WeatherApp: React.FC = () => {
                         {Math.round(weatherDataResponse.current.temp_c)}°
                       </Typography>
                       <Box>
-                        {getWeatherIcon(weatherDataResponse.current.is_day)}
+                        {getWeatherIcon(
+                          conditionCode,
+                          weatherDataResponse.current.is_day
+                        )}
                       </Box>
                     </Box>
 

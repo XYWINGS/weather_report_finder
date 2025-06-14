@@ -1,8 +1,11 @@
 export const BASE_URL = "https://api.weatherapi.com/v1";
+
 export const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
+
 export const UIMessages = {
   defaultError: "Something went wrong",
 };
+
 export enum RequestState {
   IDLE = "idle",
   LOADING = "loading",
@@ -19,6 +22,25 @@ export interface CitySuggestion {
   lon: number;
   url: string;
 }
+
+export const stormCodes = new Set([1087, 1273, 1276, 1279, 1282]);
+
+export const rainCodes = new Set([
+  1063, 1150, 1153, 1168, 1171, 1180, 1183, 1186, 1189, 1192, 1195, 1198, 1201,
+  1240, 1243, 1246, 1273, 1276,
+]);
+
+export const snowCodes = new Set([
+  1066, 1114, 1117, 1210, 1213, 1216, 1219, 1222, 1225, 1255, 1258, 1279, 1282,
+]);
+
+export const cloudCodes = new Set([1003, 1006, 1009]);
+
+export const clearCodes = new Set([1000]);
+
+export const mistCodes = new Set([1030, 1135, 1147]);
+
+export const partlyCloudyCodes = new Set([1003]);
 
 export interface WeatherResponse {
   location: {
@@ -66,70 +88,4 @@ export interface WeatherResponse {
     gust_mph: number;
     gust_kph: number;
   };
-}
-
-export enum HttpStatusCode {
-  Continue = 100,
-  SwitchingProtocols = 101,
-  Processing = 102,
-  EarlyHints = 103,
-  Ok = 200,
-  Created = 201,
-  Accepted = 202,
-  NonAuthoritativeInformation = 203,
-  NoContent = 204,
-  ResetContent = 205,
-  PartialContent = 206,
-  MultiStatus = 207,
-  AlreadyReported = 208,
-  ImUsed = 226,
-  MultipleChoices = 300,
-  MovedPermanently = 301,
-  Found = 302,
-  SeeOther = 303,
-  NotModified = 304,
-  UseProxy = 305,
-  Unused = 306,
-  TemporaryRedirect = 307,
-  PermanentRedirect = 308,
-  BadRequest = 400,
-  Unauthorized = 401,
-  PaymentRequired = 402,
-  Forbidden = 403,
-  NotFound = 404,
-  MethodNotAllowed = 405,
-  NotAcceptable = 406,
-  ProxyAuthenticationRequired = 407,
-  RequestTimeout = 408,
-  Conflict = 409,
-  Gone = 410,
-  LengthRequired = 411,
-  PreconditionFailed = 412,
-  PayloadTooLarge = 413,
-  UriTooLong = 414,
-  UnsupportedMediaType = 415,
-  RangeNotSatisfiable = 416,
-  ExpectationFailed = 417,
-  ImATeapot = 418,
-  MisdirectedRequest = 421,
-  UnprocessableEntity = 422,
-  Locked = 423,
-  FailedDependency = 424,
-  TooEarly = 425,
-  UpgradeRequired = 426,
-  PreconditionRequired = 428,
-  TooManyRequests = 429,
-  RequestHeaderFieldsTooLarge = 431,
-  UnavailableForLegalReasons = 451,
-  InternalServerError = 500,
-  NotImplemented = 501,
-  BadGateway = 502,
-  ServiceUnavailable = 503,
-  GatewayTimeout = 504,
-  HttpVersionNotSupported = 505,
-  VariantAlsoNegotiates = 506,
-  InsufficientStorage = 507,
-  LoopDetected = 508,
-  NotExtended = 510,
-  NetworkAuthenticationRequired = 511,
 }

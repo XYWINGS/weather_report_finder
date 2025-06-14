@@ -1,3 +1,11 @@
+import {
+  mistCodes,
+  rainCodes,
+  snowCodes,
+  stormCodes,
+  cloudCodes,
+  clearCodes,
+} from "@configs/types";
 import React from "react";
 import { Box, keyframes } from "@mui/material";
 
@@ -63,15 +71,6 @@ const sunPulse = keyframes`
   }
 `;
 
-const lightning = keyframes`
-  0%, 90%, 100% {
-    opacity: 0;
-  }
-  5%, 10%, 15%, 20% {
-    opacity: 1;
-  }
-`;
-
 const mistFloat = keyframes`
   0% {
     transform: translateX(-50px);
@@ -87,7 +86,7 @@ const mistFloat = keyframes`
 `;
 
 interface WeatherBackgroundProps {
-  condition: string;
+  condition: number;
   children?: React.ReactNode;
 }
 
@@ -95,29 +94,6 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
   condition,
   children,
 }) => {
-  const conditionLower = condition.toLowerCase();
-
-  const getWeatherGradient = () => {
-    if (conditionLower.includes("rain") || conditionLower.includes("storm")) {
-      return "linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #4a6741 100%)";
-    } else if (conditionLower.includes("snow")) {
-      return "linear-gradient(135deg, #e6f3ff 0%, #cce7ff 50%, #b3daff 100%)";
-    } else if (conditionLower.includes("cloud")) {
-      return "linear-gradient(135deg, #bdc3c7 0%, #95a5a6 50%, #7f8c8d 100%)";
-    } else if (
-      conditionLower.includes("sunny") ||
-      conditionLower.includes("clear")
-    ) {
-      return "linear-gradient(135deg, #87CEEB 0%, #98D8E8 50%, #87CEEB 100%)";
-    } else if (
-      conditionLower.includes("mist") ||
-      conditionLower.includes("fog")
-    ) {
-      return "linear-gradient(135deg, #d5d8dc 0%, #aeb6bf 50%, #85929e 100%)";
-    }
-    return "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
-  };
-
   const renderRainAnimation = () => (
     <>
       {Array.from({ length: 50 }, (_, i) => (
@@ -236,26 +212,255 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
       />
     </Box>
   );
-  
-  const renderStormAnimation = () => (
-    <>
-      {renderRainAnimation()}
-      {/* Lightning effect */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background: "rgba(255, 255, 255, 0.1)",
-          animation: `${lightning} 3s infinite`,
-          animationDelay: "1s",
-          zIndex: 2,
+
+  const renderStormAnimation = () => {
+    const lightningKeyframes = `
+    @keyframes lightning {
+      0% { opacity: 0; }
+      2% { opacity: 1; }
+      4% { opacity: 0; }
+      6% { opacity: 1; }
+      8% { opacity: 0; }
+      100% { opacity: 0; }
+    }
+  `;
+
+    const lightningBoltKeyframes = `
+    @keyframes lightningBolt {
+      0% { opacity: 0; transform: scaleY(0); }
+      1% { opacity: 1; transform: scaleY(1); }
+      3% { opacity: 1; transform: scaleY(1); }
+      5% { opacity: 0; transform: scaleY(0); }
+      100% { opacity: 0; transform: scaleY(0); }
+    }
+  `;
+
+    const skyFlashKeyframes = `
+    @keyframes skyFlash {
+      0% { background: rgba(135, 206, 235, 0.1); }
+      2% { background: rgba(255, 255, 255, 0.4); }
+      4% { background: rgba(135, 206, 235, 0.1); }
+      6% { background: rgba(255, 255, 255, 0.3); }
+      8% { background: rgba(135, 206, 235, 0.1); }
+      100% { background: rgba(135, 206, 235, 0.1); }
+    }
+  `;
+
+    const rainKeyframes = `
+    @keyframes rainFall {
+      0% { transform: translateY(-100vh); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+  `;
+
+    const sunPulseKeyframes = `
+    @keyframes sunPulse {
+      0% {
+        box-shadow: 
+          0 0 20px rgba(255, 215, 0, 0.4),
+          0 0 40px rgba(255, 165, 0, 0.3),
+          0 0 60px rgba(255, 140, 0, 0.2);
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        box-shadow: 
+          0 0 40px rgba(255, 215, 0, 0.8),
+          0 0 80px rgba(255, 165, 0, 0.6),
+          0 0 120px rgba(255, 140, 0, 0.4),
+          0 0 160px rgba(255, 140, 0, 0.2);
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+      100% {
+        box-shadow: 
+          0 0 20px rgba(255, 215, 0, 0.4),
+          0 0 40px rgba(255, 165, 0, 0.3),
+          0 0 60px rgba(255, 140, 0, 0.2);
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+  `;
+
+    return (
+      <div
+        style={{
+          position: "relative",
+          width: "100vw",
+          height: "100vh",
+          overflow: "hidden",
+          background: "linear-gradient(to bottom, #1e3c72, #2a5298)",
         }}
-      />
-    </>
-  );
+      >
+        {/* Inject keyframes */}
+        <style>
+          {lightningKeyframes}
+          {lightningBoltKeyframes}
+          {skyFlashKeyframes}
+          {rainKeyframes}
+          {sunPulseKeyframes}
+        </style>
+
+        {/* Rain Animation */}
+        {Array.from({ length: 50 }, (_, i) => (
+          <div
+            key={`rain-${i}`}
+            style={{
+              position: "absolute",
+              top: "-10px",
+              left: `${Math.random() * 100}%`,
+              width: "2px",
+              height: `${20 + Math.random() * 30}px`,
+              background:
+                "linear-gradient(to bottom, rgba(173, 216, 230, 0.8), rgba(135, 206, 235, 0.4))",
+              borderRadius: "1px",
+              animation: `rainFall ${2 + Math.random() * 2}s linear infinite`,
+              animationDelay: `${Math.random() * 2}s`,
+              zIndex: 3,
+            }}
+          />
+        ))}
+
+        {/* Sky flash effect */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            animation: "skyFlash 4s infinite",
+            animationDelay: "1s",
+            zIndex: 1,
+          }}
+        />
+
+        {/* First lightning bolt */}
+        <div
+          style={{
+            position: "absolute",
+            top: "10%",
+            left: "30%",
+            width: "4px",
+            height: "200px",
+            background:
+              "linear-gradient(to bottom, #ffffff, #87ceeb, transparent)",
+            borderRadius: "2px",
+            transformOrigin: "top center",
+            animation: "lightningBolt 4s infinite",
+            animationDelay: "1s",
+            zIndex: 2,
+            boxShadow:
+              "0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(135, 206, 235, 0.4)",
+          }}
+        >
+          {/* Branch 1 */}
+          <div
+            style={{
+              position: "absolute",
+              top: "60%",
+              left: "50%",
+              width: "3px",
+              height: "80px",
+              background: "linear-gradient(135deg, #ffffff, transparent)",
+              transform: "rotate(25deg) translateX(-50%)",
+              borderRadius: "2px",
+            }}
+          />
+          {/* Branch 2 */}
+          <div
+            style={{
+              position: "absolute",
+              top: "40%",
+              right: "50%",
+              width: "2px",
+              height: "60px",
+              background: "linear-gradient(45deg, #ffffff, transparent)",
+              transform: "rotate(-30deg) translateX(50%)",
+              borderRadius: "2px",
+            }}
+          />
+        </div>
+
+        {/* Second lightning bolt */}
+        <div
+          style={{
+            position: "absolute",
+            top: "15%",
+            left: "65%",
+            width: "3px",
+            height: "180px",
+            background:
+              "linear-gradient(to bottom, #ffffff, #87ceeb, transparent)",
+            borderRadius: "2px",
+            transformOrigin: "top center",
+            animation: "lightningBolt 4s infinite",
+            animationDelay: "1.5s",
+            zIndex: 2,
+            boxShadow:
+              "0 0 15px rgba(255, 255, 255, 0.6), 0 0 30px rgba(135, 206, 235, 0.3)",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              width: "2px",
+              height: "70px",
+              background: "linear-gradient(120deg, #ffffff, transparent)",
+              transform: "rotate(20deg) translateX(-50%)",
+              borderRadius: "2px",
+            }}
+          />
+        </div>
+
+        {/* Third lightning bolt */}
+        <div
+          style={{
+            position: "absolute",
+            top: "20%",
+            left: "45%",
+            width: "2px",
+            height: "150px",
+            background:
+              "linear-gradient(to bottom, #ffffff, #87ceeb, transparent)",
+            borderRadius: "2px",
+            transformOrigin: "top center",
+            animation: "lightningBolt 4s infinite",
+            animationDelay: "2.2s",
+            zIndex: 2,
+            boxShadow:
+              "0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(135, 206, 235, 0.2)",
+          }}
+        />
+
+        {/* Sun with pulsing glow */}
+        <div
+          style={{
+            position: "absolute",
+            top: "8%",
+            right: "8%",
+            width: "100px",
+            height: "100px",
+            zIndex: 1,
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              width: "50px",
+              height: "50px",
+              background:
+                "radial-gradient(circle, #FFD700 0%, #FFA500 70%, #FF8C00 100%)",
+              borderRadius: "50%",
+              animation: "sunPulse 3s ease-in-out infinite",
+            }}
+          />
+        </div>
+      </div>
+    );
+  };
 
   const renderMistAnimation = () => (
     <>
@@ -282,27 +487,33 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
     </>
   );
 
-  const getWeatherAnimation = () => {
-    if (conditionLower.includes("rain") && conditionLower.includes("storm")) {
+  const getWeatherGradient = (conditionCode: number) => {
+    if (stormCodes.has(conditionCode) || rainCodes.has(conditionCode)) {
+      return "linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #4a6741 100%)";
+    } else if (snowCodes.has(conditionCode)) {
+      return "linear-gradient(135deg,rgb(198, 221, 241) 0%, #cce7ff 50%, #b3daff 100%)";
+    } else if (cloudCodes.has(conditionCode)) {
+      return "linear-gradient(135deg, #bdc3c7 0%, #95a5a6 50%, #7f8c8d 100%)";
+    } else if (clearCodes.has(conditionCode)) {
+      return "linear-gradient(135deg, #87CEEB 0%, #98D8E8 50%, #87CEEB 100%)";
+    } else if (mistCodes.has(conditionCode)) {
+      return "linear-gradient(135deg, #d5d8dc 0%, #aeb6bf 50%, #85929e 100%)";
+    }
+    return "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+  };
+
+  const getWeatherAnimation = (conditionCode: number) => {
+    if (stormCodes.has(conditionCode)) {
       return renderStormAnimation();
-    } else if (
-      conditionLower.includes("rain") ||
-      conditionLower.includes("drizzle")
-    ) {
+    } else if (rainCodes.has(conditionCode)) {
       return renderRainAnimation();
-    } else if (conditionLower.includes("snow")) {
+    } else if (snowCodes.has(conditionCode)) {
       return renderSnowAnimation();
-    } else if (conditionLower.includes("cloud")) {
+    } else if (cloudCodes.has(conditionCode)) {
       return renderCloudAnimation();
-    } else if (
-      conditionLower.includes("sunny") ||
-      conditionLower.includes("clear")
-    ) {
+    } else if (clearCodes.has(conditionCode)) {
       return renderSunnyAnimation();
-    } else if (
-      conditionLower.includes("mist") ||
-      conditionLower.includes("fog")
-    ) {
+    } else if (mistCodes.has(conditionCode)) {
       return renderMistAnimation();
     }
     return null;
@@ -314,7 +525,7 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
         minHeight: "90%",
         height: "100%",
         width: "98%",
-        background: getWeatherGradient(),
+        background: getWeatherGradient(condition),
         p: 2,
         overflowX: "hidden",
         overflowY: "auto",
@@ -333,7 +544,7 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
           zIndex: 0,
         }}
       >
-        {getWeatherAnimation()}
+        {getWeatherAnimation(condition)}
       </Box>
 
       {/* Content layer */}
