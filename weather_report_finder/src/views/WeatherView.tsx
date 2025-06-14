@@ -28,13 +28,15 @@ import {
   InputAdornment,
   LinearProgress,
   CircularProgress,
+  Autocomplete,
 } from "@mui/material";
-import { RequestState } from "@configs/types";
 import { getUserLocation } from "@configs/utils";
 import React, { useEffect, useState } from "react";
 import { fetchWeather } from "@slices/weatherSlice";
+import { fetchLocation } from "@slices/locationSlice";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { WeatherStatusComponent } from "./WeatherStatusComponent";
+import { RequestState, type CitySuggestion } from "@configs/types";
 
 const WeatherApp: React.FC = () => {
   const theme = useTheme();
@@ -45,9 +47,32 @@ const WeatherApp: React.FC = () => {
   const weatherDataResponse = useAppSelector(
     (state) => state.weather.weatherData
   );
+  const [open, setOpen] = useState(false);
   const dataLoadingState = useAppSelector((state) => state.weather.state);
+  const suggestedCity = useAppSelector(
+    (state) => state.location.locationSuggestion
+  );
+  const suggestedCityLoadingSate = useAppSelector(
+    (state) => state.location.state
+  );
+  const loadingSuggestions = suggestedCityLoadingSate === RequestState.LOADING;
 
-  //Fetch data initially based on the location
+  useEffect(() => {
+    if (dataLoadingState === RequestState.LOADING) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [dataLoadingState]);
+
+  // Trigger fetch on typing
+  useEffect(() => {
+    if (searchQuery && searchQuery.length > 2) {
+      dispatch(fetchLocation(searchQuery));
+    }
+  }, [searchQuery]);
+
+  // Fetch data initially based on the location
   useEffect(() => {
     getUserLocation()
       .then(({ lat, lon }) => {
@@ -59,27 +84,6 @@ const WeatherApp: React.FC = () => {
   }, [dispatch]);
 
   // Set data loading state
-  useEffect(() => {
-    if (dataLoadingState === RequestState.LOADING) {
-      setLoading(true);
-    } else {
-      setLoading(false);
-    }
-  }, [dataLoadingState]);
-
-  // Function to handle search
-  const handleSearch = (query: string) => {
-    if (query.trim()) {
-      dispatch(fetchWeather(query.trim()));
-    }
-  };
-
-  // Handle Enter key press in search
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch(searchQuery);
-    }
-  };
 
   const getWeatherIcon = (condition: string, isDay: number) => {
     const iconProps = {
@@ -246,12 +250,13 @@ const WeatherApp: React.FC = () => {
     >
       {dataLoadingState === RequestState.LOADING && <WeatherStatusComponent />}
 
-      {dataLoadingState === RequestState.FAILED && (
-        <WeatherStatusComponent
-          isError={true}
-          onRetry={() => window.location.reload()}
-        />
-      )}
+      {dataLoadingState === RequestState.FAILED ||
+        (dataLoadingState === RequestState.IDLE && (
+          <WeatherStatusComponent
+            isError={true}
+            onRetry={() => window.location.reload()}
+          />
+        ))}
 
       {dataLoadingState === RequestState.SUCCEEDED && weatherDataResponse && (
         <Box
@@ -294,36 +299,60 @@ const WeatherApp: React.FC = () => {
 
             {/* Search Bar */}
             <Box mb={{ xs: 3, sm: 4 }}>
-              <TextField
-                fullWidth
-                variant="outlined"
-                placeholder="Search for a city..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={handleKeyPress}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search color="action" />
-                    </InputAdornment>
-                  ),
+              <Autocomplete
+                open={open}
+                onOpen={() => setOpen(true)}
+                onClose={() => setOpen(false)}
+                loading={loadingSuggestions}
+                options={Array.isArray(suggestedCity) ? suggestedCity : []}
+                getOptionLabel={(option: CitySuggestion) =>
+                  `${option.name}, ${option.region}, ${option.country}`
+                }
+                onInputChange={(event, newInputValue) => {
+                  setSearchQuery(newInputValue);
                 }}
-                sx={{
-                  maxWidth: 600,
-                  mx: "auto",
-                  display: "block",
-                  "& .MuiOutlinedInput-root": {
-                    bgcolor: "rgba(255,255,255,0.95)",
-                    backdropFilter: "blur(10px)",
-                    borderRadius: 2,
-                    "&:hover fieldset": {
-                      borderColor: "primary.main",
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "primary.main",
-                    },
-                  },
+                onChange={(e, selectedOption) => {
+                  if (selectedOption) {
+                    dispatch(fetchWeather(selectedOption.name));
+                  }
                 }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    fullWidth
+                    variant="outlined"
+                    placeholder="Search for a city..."
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <>
+                          <InputAdornment position="start">
+                            <Search color="action" />
+                          </InputAdornment>
+                          {params.InputProps.startAdornment}
+                        </>
+                      ),
+                      endAdornment: (
+                        <>
+                          {loadingSuggestions ? (
+                            <CircularProgress size={20} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                    sx={{
+                      maxWidth: 600,
+                      mx: "auto",
+                      display: "block",
+                      "& .MuiOutlinedInput-root": {
+                        bgcolor: "rgba(255,255,255,0.95)",
+                        backdropFilter: "blur(10px)",
+                        borderRadius: 2,
+                      },
+                    }}
+                  />
+                )}
               />
             </Box>
 
@@ -428,7 +457,7 @@ const WeatherApp: React.FC = () => {
 
             {/* Weather Details Grid */}
             <Grid container spacing={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
-              <Grid size={{ xs: 6, md: 3, sm: 6 }}>
+              <Grid size={{ xs: 4, md: 4, sm: 4 }}>
                 <WeatherCard
                   icon={<Grain />}
                   title="Humidity"
@@ -438,7 +467,7 @@ const WeatherApp: React.FC = () => {
                 />
               </Grid>
 
-              <Grid size={{ xs: 6, md: 3, sm: 6 }}>
+              <Grid size={{ xs: 4, md: 4, sm: 4 }}>
                 <WeatherCard
                   icon={<Air />}
                   title="Wind Speed"
@@ -448,19 +477,7 @@ const WeatherApp: React.FC = () => {
                   subtitle={`${weatherDataResponse.current.wind_dir} ${weatherDataResponse.current.wind_degree}°`}
                 />
               </Grid>
-
-              <Grid size={{ xs: 6, md: 3, sm: 6 }}>
-                <WeatherCard
-                  icon={<WbSunny />}
-                  title="UV Index"
-                  value={weatherDataResponse.current.uv}
-                  unit=""
-                  color="warning"
-                  subtitle={getUVIndexText(weatherDataResponse.current.uv)}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 6, md: 3, sm: 6 }}>
+              <Grid size={{ xs: 4, md: 4, sm: 4 }}>
                 <WeatherCard
                   icon={<Visibility />}
                   title="Visibility"
@@ -470,6 +487,90 @@ const WeatherApp: React.FC = () => {
                 />
               </Grid>
             </Grid>
+
+                        {/* UV Index Detail Card */}
+            <Card
+              elevation={3}
+              sx={{
+                mb: { xs: 3, sm: 4 },
+                background: `linear-gradient(135deg, ${getUVIndexColor(
+                  weatherDataResponse.current.uv
+                )}20 0%, ${getUVIndexColor(
+                  weatherDataResponse.current.uv
+                )}10 100%)`,
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255,255,255,0.2)",
+              }}
+            >
+              <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                <Grid container alignItems="center" spacing={2}>
+                  <Grid size={{ xs: 12, sm: 8 }}>
+                    <Box display="flex" alignItems="center" mb={1}>
+                      <LightMode
+                        sx={{
+                          color: getUVIndexColor(
+                            weatherDataResponse.current.uv
+                          ),
+                          mr: 1,
+                        }}
+                      />
+                      <Typography
+                        variant={isMobile ? "h6" : "h5"}
+                        color="white"
+                        fontWeight={500}
+                      >
+                        UV Index Details
+                      </Typography>
+                    </Box>
+                    <Typography variant="body1" color="rgba(255,255,255,0.8)">
+                      Current UV radiation level
+                    </Typography>
+                    <LinearProgress
+                      variant="determinate"
+                      value={(weatherDataResponse.current.uv / 11) * 100}
+                      sx={{
+                        mt: 1,
+                        height: 8,
+                        borderRadius: 4,
+                        backgroundColor: "rgba(255,255,255,0.2)",
+                        "& .MuiLinearProgress-bar": {
+                          backgroundColor: getUVIndexColor(
+                            weatherDataResponse.current.uv
+                          ),
+                          borderRadius: 4,
+                        },
+                      }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 4 }}>
+                    <Box textAlign={{ xs: "center", sm: "right" }}>
+                      <Typography
+                        variant={isMobile ? "h3" : "h2"}
+                        fontWeight="bold"
+                        sx={{
+                          color: getUVIndexColor(
+                            weatherDataResponse.current.uv
+                          ),
+                        }}
+                        gutterBottom
+                      >
+                        {weatherDataResponse.current.uv}
+                      </Typography>
+                      <Chip
+                        label={getUVIndexText(weatherDataResponse.current.uv)}
+                        sx={{
+                          backgroundColor: getUVIndexColor(
+                            weatherDataResponse.current.uv
+                          ),
+                          color: "white",
+                          fontWeight: "bold",
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
 
             {/* Additional Weather Info */}
             <Grid container spacing={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
@@ -670,90 +771,6 @@ const WeatherApp: React.FC = () => {
                 </Card>
               </Grid>
             </Grid>
-
-            {/* UV Index Detail Card */}
-            <Card
-              elevation={3}
-              sx={{
-                mb: { xs: 3, sm: 4 },
-                background: `linear-gradient(135deg, ${getUVIndexColor(
-                  weatherDataResponse.current.uv
-                )}20 0%, ${getUVIndexColor(
-                  weatherDataResponse.current.uv
-                )}10 100%)`,
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(255,255,255,0.2)",
-              }}
-            >
-              <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-                <Grid container alignItems="center" spacing={2}>
-                  <Grid size={{ xs: 12, sm: 8 }}>
-                    <Box display="flex" alignItems="center" mb={1}>
-                      <LightMode
-                        sx={{
-                          color: getUVIndexColor(
-                            weatherDataResponse.current.uv
-                          ),
-                          mr: 1,
-                        }}
-                      />
-                      <Typography
-                        variant={isMobile ? "h6" : "h5"}
-                        color="white"
-                        fontWeight={500}
-                      >
-                        UV Index Details
-                      </Typography>
-                    </Box>
-                    <Typography variant="body1" color="rgba(255,255,255,0.8)">
-                      Current UV radiation level
-                    </Typography>
-                    <LinearProgress
-                      variant="determinate"
-                      value={(weatherDataResponse.current.uv / 11) * 100}
-                      sx={{
-                        mt: 1,
-                        height: 8,
-                        borderRadius: 4,
-                        backgroundColor: "rgba(255,255,255,0.2)",
-                        "& .MuiLinearProgress-bar": {
-                          backgroundColor: getUVIndexColor(
-                            weatherDataResponse.current.uv
-                          ),
-                          borderRadius: 4,
-                        },
-                      }}
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 4 }}>
-                    <Box textAlign={{ xs: "center", sm: "right" }}>
-                      <Typography
-                        variant={isMobile ? "h3" : "h2"}
-                        fontWeight="bold"
-                        sx={{
-                          color: getUVIndexColor(
-                            weatherDataResponse.current.uv
-                          ),
-                        }}
-                        gutterBottom
-                      >
-                        {weatherDataResponse.current.uv}
-                      </Typography>
-                      <Chip
-                        label={getUVIndexText(weatherDataResponse.current.uv)}
-                        sx={{
-                          backgroundColor: getUVIndexColor(
-                            weatherDataResponse.current.uv
-                          ),
-                          color: "white",
-                          fontWeight: "bold",
-                        }}
-                      />
-                    </Box>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
 
             {/* Footer */}
             <Box textAlign="center">

@@ -10,6 +10,16 @@ export enum RequestState {
   FAILED = "failed",
 }
 
+export interface CitySuggestion {
+  id: number;
+  name: string;
+  region: string;
+  country: string;
+  lat: number;
+  lon: number;
+  url: string;
+}
+
 export interface WeatherResponse {
   location: {
     name: string;
