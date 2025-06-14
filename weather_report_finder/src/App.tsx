@@ -1,15 +1,14 @@
 import "./App.css";
-import viteLogo from "/vite.svg";
 import { store } from "@slices/store";
 import { Provider } from "react-redux";
-import reactLogo from "./assets/react.svg";
 import WeatherView from "@views/WeatherView";
 import { SnackbarProvider } from "notistack";
-import { ErrorBoundary } from "@views/ErrorBoundry";
+import { UIMessages } from "@configs/types";
+import { ErrorBoundary } from "@views/ErrorBoundary";
 
 function App() {
   return (
-    <ErrorBoundary fallback={<p>Something went wrong</p>}>
+    <ErrorBoundary fallback={UIMessages.defaultError}>
       <Provider store={store}>
         <SnackbarProvider maxSnack={3} preventDuplicate>
           <WeatherView />

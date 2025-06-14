@@ -1,6 +1,8 @@
 export const BASE_URL = "https://api.weatherapi.com/v1/current.json";
 export const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
-
+export const UIMessages = {
+  defaultError: "Something went wrong",
+};
 export enum RequestState {
   IDLE = "idle",
   LOADING = "loading",
