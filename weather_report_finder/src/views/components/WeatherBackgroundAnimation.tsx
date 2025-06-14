@@ -141,8 +141,8 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
           sx={{
             position: "absolute",
             left: `${Math.random() * 100}%`,
-            width: "2px",
-            height: "20px",
+            width: "5px",
+            height: "50px",
             background:
               "linear-gradient(to bottom, transparent, #42A5F5, transparent)",
             animation: `${rainDrop} ${1 + Math.random() * 2}s linear infinite`,
