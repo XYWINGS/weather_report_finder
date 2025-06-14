@@ -1,11 +1,11 @@
-import { enqueueSnackbar } from "notistack";
-import axios, { HttpStatusCode } from "axios";
 import {
   API_KEY,
   BASE_URL,
   RequestState,
   type WeatherResponse,
 } from "@configs/types";
+import { enqueueSnackbar } from "notistack";
+import axios, { HttpStatusCode } from "axios";
 import { getErrorMessage } from "@configs/utils";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -34,7 +34,7 @@ export const fetchWeather = createAsyncThunk(
     }
 
     try {
-      const response = await axios.get(BASE_URL, {
+      const response = await axios.get(`${BASE_URL}/current.json`, {
         params: { q: location, key: API_KEY },
       });
 

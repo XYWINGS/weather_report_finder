@@ -1,39 +1,39 @@
-import React, { useEffect, useState } from "react";
 import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-  Avatar,
-  Chip,
-  TextField,
-  InputAdornment,
-  CircularProgress,
-  Container,
-  useTheme,
-  useMediaQuery,
-  LinearProgress,
-} from "@mui/material";
-import {
-  WbSunny,
+  Air,
   Cloud,
   Grain,
-  Air,
-  Visibility,
-  Thermostat,
-  Search,
-  LocationOn,
   Speed,
+  Search,
+  WbSunny,
   WbCloudy,
   LightMode,
   CloudQueue,
+  Thermostat,
+  LocationOn,
+  Visibility,
   BeachAccess,
 } from "@mui/icons-material";
+import {
+  Box,
+  Card,
+  Chip,
+  Grid,
+  Avatar,
+  useTheme,
+  TextField,
+  Container,
+  Typography,
+  CardContent,
+  useMediaQuery,
+  InputAdornment,
+  LinearProgress,
+  CircularProgress,
+} from "@mui/material";
 import { RequestState } from "@configs/types";
-import { useAppDispatch, useAppSelector } from "@slices/store";
-import { fetchWeather } from "@slices/weatherSlice";
 import { getUserLocation } from "@configs/utils";
+import React, { useEffect, useState } from "react";
+import { fetchWeather } from "@slices/weatherSlice";
+import { useAppDispatch, useAppSelector } from "@slices/store";
 import { WeatherStatusComponent } from "./WeatherStatusComponent";
 
 const WeatherApp: React.FC = () => {
@@ -47,6 +47,7 @@ const WeatherApp: React.FC = () => {
   );
   const dataLoadingState = useAppSelector((state) => state.weather.state);
 
+  //Fetch data initially based on the location
   useEffect(() => {
     getUserLocation()
       .then(({ lat, lon }) => {
@@ -57,6 +58,7 @@ const WeatherApp: React.FC = () => {
       });
   }, [dispatch]);
 
+  // Set data loading state
   useEffect(() => {
     if (dataLoadingState === RequestState.LOADING) {
       setLoading(true);
@@ -244,7 +246,12 @@ const WeatherApp: React.FC = () => {
     >
       {dataLoadingState === RequestState.LOADING && <WeatherStatusComponent />}
 
-      {dataLoadingState === RequestState.FAILED && <WeatherStatusComponent />}
+      {dataLoadingState === RequestState.FAILED && (
+        <WeatherStatusComponent
+          isError={true}
+          onRetry={() => window.location.reload()}
+        />
+      )}
 
       {dataLoadingState === RequestState.SUCCEEDED && weatherDataResponse && (
         <Box

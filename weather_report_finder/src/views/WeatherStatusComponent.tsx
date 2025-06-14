@@ -1,4 +1,12 @@
-import React from "react";
+import {
+  Air,
+  Cloud,
+  WbSunny,
+  Warning,
+  Refresh,
+  WbCloudy,
+  ErrorOutline,
+} from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -9,15 +17,7 @@ import {
   useMediaQuery,
   LinearProgress,
 } from "@mui/material";
-import {
-  Air,
-  Cloud,
-  WbSunny,
-  Warning,
-  Refresh,
-  WbCloudy,
-  ErrorOutline,
-} from "@mui/icons-material";
+import React from "react";
 
 // Loading animation keyframes
 const float = keyframes`

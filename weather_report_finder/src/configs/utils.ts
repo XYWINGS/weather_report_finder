@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 
+//Extract the error message from common response types
 export const getErrorMessage = (
   error: unknown,
   defaultErrorMessage: string
@@ -19,6 +20,7 @@ export const getErrorMessage = (
   return defaultErrorMessage;
 };
 
+//Get the user's geo location through browser
 export const getUserLocation = (): Promise<{ lat: number; lon: number }> => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
