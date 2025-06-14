@@ -34,6 +34,7 @@ import { RequestState } from "@configs/types";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { fetchWeather } from "@slices/weatherSlice";
 import { getUserLocation } from "@configs/utils";
+import { WeatherStatusComponent } from "./WeatherStatusComponent";
 
 const WeatherApp: React.FC = () => {
   const theme = useTheme();
@@ -241,6 +242,10 @@ const WeatherApp: React.FC = () => {
         overflow: "hidden",
       }}
     >
+      {dataLoadingState === RequestState.LOADING && <WeatherStatusComponent />}
+
+      {dataLoadingState === RequestState.FAILED && <WeatherStatusComponent />}
+
       {dataLoadingState === RequestState.SUCCEEDED && weatherDataResponse && (
         <Box
           sx={{
