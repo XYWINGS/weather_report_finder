@@ -1,9 +1,21 @@
 import {
+  Box,
+  Card,
+  Chip,
+  Grid,
+  useTheme,
+  Container,
+  Typography,
+  CardContent,
+  useMediaQuery,
+  LinearProgress,
+  CircularProgress,
+} from "@mui/material";
+import {
   Air,
   Cloud,
   Grain,
   Speed,
-  Search,
   WbSunny,
   WbCloudy,
   LightMode,
@@ -14,37 +26,21 @@ import {
   BeachAccess,
 } from "@mui/icons-material";
 import {
-  Box,
-  Card,
-  Chip,
-  Grid,
-  Avatar,
-  useTheme,
-  TextField,
-  Container,
-  Typography,
-  CardContent,
-  Autocomplete,
-  useMediaQuery,
-  InputAdornment,
-  LinearProgress,
-  CircularProgress,
-} from "@mui/material";
-import {
   rainCodes,
   clearCodes,
   cloudCodes,
   RequestState,
   partlyCloudyCodes,
-  type CitySuggestion,
 } from "@configs/types";
 import { getUserLocation } from "@configs/utils";
 import React, { useEffect, useState } from "react";
 import { fetchWeather } from "@slices/weatherSlice";
 import { fetchLocation } from "@slices/locationSlice";
+import WeatherHeader from "./components/WeatherHeader";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { WeatherStatusComponent } from "./WeatherStatusComponent";
 import { WeatherBackgroundAnimation } from "./components/WeatherBackgroundAnimation";
+import { WeatherCard } from "./components/WeatherCard";
 
 const WeatherApp: React.FC = () => {
   const theme = useTheme();
@@ -55,7 +51,6 @@ const WeatherApp: React.FC = () => {
   const weatherDataResponse = useAppSelector(
     (state) => state.weather.weatherData
   );
-  const [open, setOpen] = useState(false);
   const dataLoadingState = useAppSelector((state) => state.weather.state);
   const suggestedCity = useAppSelector(
     (state) => state.location.locationSuggestion
@@ -92,49 +87,7 @@ const WeatherApp: React.FC = () => {
       });
   }, [dispatch]);
 
-  // const getWeatherIcon = (isDay: number) => {
-  //   const iconProps = {
-  //     sx: { fontSize: { xs: 60, sm: 80 } },
-  //   };
-
-  //   // Determine color based on day/night
-  //   const sunColor = isDay ? "#FFB74D" : "#FFA726";
-  //   const cloudColor = "#90A4AE";
-
-  //   if (conditionCode.includes("rain") || conditionCode.includes("drizzle")) {
-  //     return (
-  //       <BeachAccess
-  //         {...iconProps}
-  //         sx={{ ...iconProps.sx, color: "#42A5F5" }}
-  //       />
-  //     );
-  //   } else if (conditionCode.includes("cloud")) {
-  //     if (conditionCode.includes("partly")) {
-  //       return (
-  //         <WbCloudy
-  //           {...iconProps}
-  //           sx={{ ...iconProps.sx, color: cloudColor }}
-  //         />
-  //       );
-  //     } else {
-  //       return (
-  //         <Cloud {...iconProps} sx={{ ...iconProps.sx, color: "#78909C" }} />
-  //       );
-  //     }
-  //   } else if (
-  //     conditionCode.includes("sunny") ||
-  //     conditionCode.includes("clear")
-  //   ) {
-  //     return (
-  //       <WbSunny {...iconProps} sx={{ ...iconProps.sx, color: sunColor }} />
-  //     );
-  //   } else {
-  //     return (
-  //       <WbSunny {...iconProps} sx={{ ...iconProps.sx, color: sunColor }} />
-  //     );
-  //   }
-  // };
-
+  //Get icons based on the condition codes
   const getWeatherIcon = (conditionCode: number, isDay: number) => {
     const iconProps = {
       sx: { fontSize: { xs: 60, sm: 80 } },
@@ -189,88 +142,6 @@ const WeatherApp: React.FC = () => {
     return "Extreme";
   };
 
-  interface WeatherCardProps {
-    icon: React.ReactNode;
-    title: string;
-    value: number;
-    unit: string;
-    color?: "primary" | "secondary" | "success" | "info" | "warning" | "error";
-    subtitle?: string;
-  }
-
-  const WeatherCard: React.FC<WeatherCardProps> = ({
-    icon,
-    title,
-    value,
-    unit,
-    color = "primary",
-    subtitle,
-  }) => (
-    <Card
-      elevation={3}
-      sx={{
-        height: "100%",
-        background:
-          "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)",
-        backdropFilter: "blur(10px)",
-        border: "1px solid rgba(0,0,0,0.05)",
-        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-        "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: theme.shadows[8],
-        },
-      }}
-    >
-      <CardContent sx={{ textAlign: "center", p: { xs: 2, sm: 3 } }}>
-        <Avatar
-          sx={{
-            bgcolor: `${color}.main`,
-            width: { xs: 48, sm: 56 },
-            height: { xs: 48, sm: 56 },
-            mx: "auto",
-            mb: 2,
-            boxShadow: theme.shadows[4],
-          }}
-        >
-          {icon}
-        </Avatar>
-        <Typography
-          variant={isMobile ? "subtitle1" : "h6"}
-          color="text.secondary"
-          gutterBottom
-          fontWeight={500}
-        >
-          {title}
-        </Typography>
-        <Typography
-          variant={isMobile ? "h5" : "h4"}
-          fontWeight="bold"
-          color="text.primary"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {value}
-          <Typography
-            component="span"
-            variant={isMobile ? "body1" : "h6"}
-            color="text.secondary"
-            sx={{ ml: 0.5 }}
-          >
-            {unit}
-          </Typography>
-        </Typography>
-        {subtitle && (
-          <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-            {subtitle}
-          </Typography>
-        )}
-      </CardContent>
-    </Card>
-  );
-
   // Format location display
   const formatLocation = () => {
     const { name, region, country } = weatherDataResponse.location;
@@ -283,8 +154,8 @@ const WeatherApp: React.FC = () => {
   return (
     <Box
       sx={{
-        height: "99vh",
-        width: "99vw",
+        height: "100vh",
+        width: "100vw",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -302,91 +173,14 @@ const WeatherApp: React.FC = () => {
 
       {dataLoadingState === RequestState.SUCCEEDED && weatherDataResponse && (
         <WeatherBackgroundAnimation condition={conditionCode}>
-          <Container maxWidth="lg">
+          <Container maxWidth="lg" sx={{ p: 2 }}>
             {/* Header */}
-            <Box textAlign="center" mb={{ xs: 3, sm: 4 }}>
-              <Typography
-                variant={isMobile ? "h4" : "h3"}
-                fontWeight="bold"
-                color="white"
-                gutterBottom
-                sx={{
-                  textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
-                  mb: { xs: 1, sm: 2 },
-                }}
-              >
-                Rain Or Shine
-              </Typography>
-              <Typography
-                variant={isMobile ? "body1" : "h6"}
-                color="rgba(255,255,255,0.9)"
-                sx={{
-                  textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
-                  px: { xs: 2, sm: 0 },
-                }}
-              >
-                Real-time weather information at your fingertips
-              </Typography>
-            </Box>
-
-            {/* Search Bar */}
-            <Box mb={{ xs: 3, sm: 4 }}>
-              <Autocomplete
-                open={open}
-                onOpen={() => setOpen(true)}
-                onClose={() => setOpen(false)}
-                loading={loadingSuggestions}
-                options={Array.isArray(suggestedCity) ? suggestedCity : []}
-                getOptionLabel={(option: CitySuggestion) =>
-                  `${option.name}, ${option.region}, ${option.country}`
-                }
-                onInputChange={(_, newInputValue) => {
-                  setSearchQuery(newInputValue);
-                }}
-                onChange={(e, selectedOption) => {
-                  if (selectedOption) {
-                    dispatch(fetchWeather(selectedOption.name));
-                  }
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    fullWidth
-                    variant="outlined"
-                    placeholder="Search for a city..."
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: (
-                        <>
-                          <InputAdornment position="start">
-                            <Search color="action" />
-                          </InputAdornment>
-                          {params.InputProps.startAdornment}
-                        </>
-                      ),
-                      endAdornment: (
-                        <>
-                          {loadingSuggestions ? (
-                            <CircularProgress size={20} />
-                          ) : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                    sx={{
-                      maxWidth: 600,
-                      mx: "auto",
-                      display: "block",
-                      "& .MuiOutlinedInput-root": {
-                        bgcolor: "rgba(255,255,255,0.95)",
-                        backdropFilter: "blur(10px)",
-                        borderRadius: 2,
-                      },
-                    }}
-                  />
-                )}
-              />
-            </Box>
+            <WeatherHeader
+              setSearchQuery={setSearchQuery}
+              suggestedCity={Array.isArray(suggestedCity) ? suggestedCity : []}
+              loadingSuggestions={loadingSuggestions}
+              onCitySelect={(cityName) => dispatch(fetchWeather(cityName))}
+            />
 
             {/* Main Weather Card */}
             <Card
