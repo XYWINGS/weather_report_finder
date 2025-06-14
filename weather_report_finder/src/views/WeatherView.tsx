@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Card,
@@ -28,6 +28,9 @@ import {
   WbCloudy,
   LightMode,
 } from "@mui/icons-material";
+import { API_KEY, RequestState } from "@configs/types";
+import { useAppDispatch, useAppSelector } from "@slices/store";
+import { fetchWeather } from "@slices/weatherSlice";
 
 interface WeatherData {
   location: string;
@@ -47,6 +50,27 @@ const WeatherApp: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [loading, setLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const weatherDataResponse = useAppSelector(
+    (state) => state.weather.weatherData
+  );
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchWeather("Colombo"));
+  }, [dispatch]);
+
+  const dataLoadingState = useAppSelector((state) => state.weather.state);
+
+  useEffect(() => {
+    if (dataLoadingState === RequestState.LOADING) {
+      setLoading(true);
+    }
+    setLoading(false);
+  }, [dataLoadingState]);
+
+  useEffect(() => {
+    console.log("weatherDataResponse", weatherDataResponse);
+  }, [weatherDataResponse]);
 
   // sample data
   const weatherData: WeatherData = {
@@ -63,15 +87,21 @@ const WeatherApp: React.FC = () => {
   };
 
   const getWeatherIcon = (condition: string) => {
-    const iconProps = { sx: { fontSize: { xs: 60, sm: 80 }, color: "#FFB74D" } };
+    const iconProps = {
+      sx: { fontSize: { xs: 60, sm: 80 }, color: "#FFB74D" },
+    };
 
     switch (condition.toLowerCase()) {
       case "partly cloudy":
-        return <WbCloudy {...iconProps} sx={{ ...iconProps.sx, color: "#90A4AE" }} />;
+        return (
+          <WbCloudy {...iconProps} sx={{ ...iconProps.sx, color: "#90A4AE" }} />
+        );
       case "sunny":
         return <WbSunny {...iconProps} />;
       case "cloudy":
-        return <Cloud {...iconProps} sx={{ ...iconProps.sx, color: "#78909C" }} />;
+        return (
+          <Cloud {...iconProps} sx={{ ...iconProps.sx, color: "#78909C" }} />
+        );
       default:
         return <WbSunny {...iconProps} />;
     }
@@ -102,12 +132,20 @@ const WeatherApp: React.FC = () => {
     subtitle?: string;
   }
 
-  const WeatherCard: React.FC<WeatherCardProps> = ({ icon, title, value, unit, color = "primary", subtitle }) => (
+  const WeatherCard: React.FC<WeatherCardProps> = ({
+    icon,
+    title,
+    value,
+    unit,
+    color = "primary",
+    subtitle,
+  }) => (
     <Card
       elevation={3}
       sx={{
         height: "100%",
-        background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)",
+        background:
+          "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)",
         backdropFilter: "blur(10px)",
         border: "1px solid rgba(0,0,0,0.05)",
         transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -130,17 +168,31 @@ const WeatherApp: React.FC = () => {
         >
           {icon}
         </Avatar>
-        <Typography variant={isMobile ? "subtitle1" : "h6"} color="text.secondary" gutterBottom fontWeight={500}>
+        <Typography
+          variant={isMobile ? "subtitle1" : "h6"}
+          color="text.secondary"
+          gutterBottom
+          fontWeight={500}
+        >
           {title}
         </Typography>
         <Typography
           variant={isMobile ? "h5" : "h4"}
           fontWeight="bold"
           color="text.primary"
-          sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           {value}
-          <Typography component="span" variant={isMobile ? "body1" : "h6"} color="text.secondary" sx={{ ml: 0.5 }}>
+          <Typography
+            component="span"
+            variant={isMobile ? "body1" : "h6"}
+            color="text.secondary"
+            sx={{ ml: 0.5 }}
+          >
             {unit}
           </Typography>
         </Typography>
@@ -156,20 +208,21 @@ const WeatherApp: React.FC = () => {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        height: "99vh",
         width: "99vw",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        overflow: "hidden",
       }}
     >
       <Box
         sx={{
           minHeight: "90%",
+          height: "100%",
           width: "98%",
           background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          py: { xs: 2, sm: 4 },
-          px: { xs: 1, sm: 2 },
+          p: 2,
           overflowX: "hidden",
           overflowY: "auto",
         }}
@@ -251,7 +304,11 @@ const WeatherApp: React.FC = () => {
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Box display="flex" alignItems="center" mb={2}>
                     <LocationOn sx={{ color: "white", mr: 1 }} />
-                    <Typography variant={isMobile ? "h6" : "h5"} color="white" fontWeight="bold">
+                    <Typography
+                      variant={isMobile ? "h6" : "h5"}
+                      color="white"
+                      fontWeight="bold"
+                    >
                       {weatherData.location}
                     </Typography>
                   </Box>
@@ -287,7 +344,11 @@ const WeatherApp: React.FC = () => {
                   >
                     {weatherData.condition}
                   </Typography>
-                  <Typography variant="body1" color="rgba(255,255,255,0.7)" textAlign={{ xs: "center", sm: "left" }}>
+                  <Typography
+                    variant="body1"
+                    color="rgba(255,255,255,0.7)"
+                    textAlign={{ xs: "center", sm: "left" }}
+                  >
                     Feels like {weatherData.feelsLike}°C
                   </Typography>
                 </Grid>
@@ -320,7 +381,13 @@ const WeatherApp: React.FC = () => {
           {/* Weather Details Grid */}
           <Grid container spacing={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
             <Grid size={{ xs: 6, md: 3, sm: 6 }}>
-              <WeatherCard icon={<Grain />} title="Humidity" value={weatherData.humidity} unit="%" color="info" />
+              <WeatherCard
+                icon={<Grain />}
+                title="Humidity"
+                value={weatherData.humidity}
+                unit="%"
+                color="info"
+              />
             </Grid>
 
             <Grid size={{ xs: 6, md: 3, sm: 6 }}>
@@ -370,7 +437,11 @@ const WeatherApp: React.FC = () => {
                 <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                   <Box display="flex" alignItems="center" mb={2}>
                     <Thermostat sx={{ color: "white", mr: 1 }} />
-                    <Typography variant={isMobile ? "h6" : "h5"} color="white" fontWeight={500}>
+                    <Typography
+                      variant={isMobile ? "h6" : "h5"}
+                      color="white"
+                      fontWeight={500}
+                    >
                       Temperature Details
                     </Typography>
                   </Box>
@@ -407,11 +478,20 @@ const WeatherApp: React.FC = () => {
                 <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                   <Box display="flex" alignItems="center" mb={2}>
                     <Speed sx={{ color: "white", mr: 1 }} />
-                    <Typography variant={isMobile ? "h6" : "h5"} color="white" fontWeight={500}>
+                    <Typography
+                      variant={isMobile ? "h6" : "h5"}
+                      color="white"
+                      fontWeight={500}
+                    >
                       Atmospheric Pressure
                     </Typography>
                   </Box>
-                  <Typography variant={isMobile ? "h4" : "h3"} color="white" fontWeight="bold" gutterBottom>
+                  <Typography
+                    variant={isMobile ? "h4" : "h3"}
+                    color="white"
+                    fontWeight="bold"
+                    gutterBottom
+                  >
                     {weatherData.pressure}
                     <Typography
                       component="span"
@@ -435,9 +515,9 @@ const WeatherApp: React.FC = () => {
             elevation={3}
             sx={{
               mb: { xs: 3, sm: 4 },
-              background: `linear-gradient(135deg, ${getUVIndexColor(weatherData.uvIndex)}20 0%, ${getUVIndexColor(
+              background: `linear-gradient(135deg, ${getUVIndexColor(
                 weatherData.uvIndex
-              )}10 100%)`,
+              )}20 0%, ${getUVIndexColor(weatherData.uvIndex)}10 100%)`,
               backdropFilter: "blur(10px)",
               border: "1px solid rgba(255,255,255,0.2)",
             }}
@@ -446,8 +526,17 @@ const WeatherApp: React.FC = () => {
               <Grid container alignItems="center" spacing={2}>
                 <Grid size={{ xs: 12, sm: 8 }}>
                   <Box display="flex" alignItems="center" mb={1}>
-                    <LightMode sx={{ color: getUVIndexColor(weatherData.uvIndex), mr: 1 }} />
-                    <Typography variant={isMobile ? "h6" : "h5"} color="white" fontWeight={500}>
+                    <LightMode
+                      sx={{
+                        color: getUVIndexColor(weatherData.uvIndex),
+                        mr: 1,
+                      }}
+                    />
+                    <Typography
+                      variant={isMobile ? "h6" : "h5"}
+                      color="white"
+                      fontWeight={500}
+                    >
                       UV Index Details
                     </Typography>
                   </Box>
