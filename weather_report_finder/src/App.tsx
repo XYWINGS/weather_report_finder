@@ -5,14 +5,17 @@ import { Provider } from "react-redux";
 import reactLogo from "./assets/react.svg";
 import WeatherView from "@views/WeatherView";
 import { SnackbarProvider } from "notistack";
+import { ErrorBoundary } from "@views/ErrorBoundry";
 
 function App() {
   return (
-    <Provider store={store}>
-      <SnackbarProvider maxSnack={3} preventDuplicate>
-        <WeatherView></WeatherView>
-      </SnackbarProvider>
-    </Provider>
+    <ErrorBoundary fallback={<p>Something went wrong</p>}>
+      <Provider store={store}>
+        <SnackbarProvider maxSnack={3} preventDuplicate>
+          <WeatherView />
+        </SnackbarProvider>
+      </Provider>
+    </ErrorBoundary>
   );
 }
 
