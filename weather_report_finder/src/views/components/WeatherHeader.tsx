@@ -19,6 +19,7 @@ import { fetchWeather } from "@slices/weatherSlice";
 import { fetchLocation } from "@slices/locationSlice";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { RequestState, type CitySuggestion } from "@configs/types";
+import icon from "../../../public/icon.svg";
 
 interface WeatherHeaderProps {
   onMenuClick?: () => void;
@@ -92,28 +93,46 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({ onMenuClick }) => {
             )}
 
             {/* App Logo/Title */}
-            <Typography
-              variant={isSmallMobile ? "h5" : isMobile ? "h4" : "h3"}
-              component="h1"
+            <Box
               sx={{
-                fontWeight: 600,
-                background: "linear-gradient(45deg, #ffffff 30%, #e3f2fd 70%)",
-                backgroundClip: "text",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                letterSpacing: "-0.02em",
+                display: "flex",
+                alignItems: "center",
+                gap: { xs: 1, sm: 1.5, md: 2 },
                 flexGrow: { xs: 1, md: 0 },
-                textAlign: { xs: "center", md: "left" },
-                mr: { md: 4 },
+                justifyContent: { xs: "center", md: "flex-start" },
               }}
             >
-              Rain Or Shine
-            </Typography>
-
-            {/* Spacer for mobile layout balance */}
-            {isMobile && (
-              <Box sx={{ width: 40 }} /> // Balance the menu button width
-            )}
+              <Box
+                component="img"
+                src="/icon.svg"
+                alt="Rain Or Shine Weather App"
+                sx={{
+                  width: { xs: 32, sm: 36, md: 40 },
+                  height: { xs: 32, sm: 36, md: 40 },
+                  filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.2))",
+                  transition: "transform 0.2s ease",
+                  "&:hover": {
+                    transform: "scale(1.05)",
+                  },
+                }}
+              />
+              <Typography
+                variant={isSmallMobile ? "h5" : isMobile ? "h4" : "h3"}
+                component="h1"
+                sx={{
+                  fontWeight: 700,
+                  background: "linear-gradient(45deg, #ffffff 30%, #e3f2fd 70%)",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  letterSpacing: "-0.02em",
+                  textShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  display: { xs: "block" },
+                }}
+              >
+                Rain Or Shine
+              </Typography>
+            </Box>
           </Box>
 
           {/* Search Section */}
