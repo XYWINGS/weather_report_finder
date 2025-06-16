@@ -29,6 +29,7 @@ import { getUserLocation } from "@configs/utils";
 import React, { useEffect, useState } from "react";
 import { fetchWeather } from "@slices/weatherSlice";
 import { WeatherCard } from "./components/WeatherCard";
+import WeatherHeader from "./components/WeatherHeader";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { WeatherStatusComponent } from "./components/WeatherStatusComponent";
 import { WeatherBackgroundAnimation } from "./components/WeatherBackgroundAnimation";
@@ -132,16 +133,9 @@ const WeatherApp: React.FC = () => {
 
       {dataLoadingState === RequestState.SUCCEEDED && weatherDataResponse && (
         <WeatherBackgroundAnimation condition={conditionCode}>
-          <Container maxWidth="lg" sx={{ p: 2, pt: 0 }}>
-            {/* Header */}
-            {/* <WeatherHeader
-              setSearchQuery={setSearchQuery}
-              suggestedCity={Array.isArray(suggestedCity) ? suggestedCity : []}
-              loadingSuggestions={loadingSuggestions}
-              onCitySelect={(cityName) => dispatch(fetchWeather(cityName))}
-              searchQuery={searchQuery}
-            /> */}
+          <WeatherHeader />
 
+          <Container maxWidth="lg" sx={{ p: 2, pt: 0 }}>
             {/* Main Weather Card */}
             <Card
               elevation={8}

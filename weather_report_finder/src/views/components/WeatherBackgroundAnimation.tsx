@@ -1,11 +1,4 @@
-import {
-  mistCodes,
-  rainCodes,
-  snowCodes,
-  stormCodes,
-  cloudCodes,
-  clearCodes,
-} from "@configs/types";
+import { mistCodes, rainCodes, snowCodes, stormCodes, cloudCodes, clearCodes } from "@configs/types";
 import React from "react";
 import { Box, keyframes } from "@mui/material";
 
@@ -48,14 +41,14 @@ const cloudFloat = keyframes`
 
 const sunPulse = keyframes`
   0% {
-    box-shadow: 
+    box-shadow:
       0 0 20px rgba(255, 215, 0, 0.4),
       0 0 40px rgba(255, 165, 0, 0.3),
       0 0 60px rgba(255, 140, 0, 0.2);
     transform: translate(-50%, -50%) scale(1);
   }
   50% {
-    box-shadow: 
+    box-shadow:
       0 0 40px rgba(255, 215, 0, 0.8),
       0 0 80px rgba(255, 165, 0, 0.6),
       0 0 120px rgba(255, 140, 0, 0.4),
@@ -63,7 +56,7 @@ const sunPulse = keyframes`
     transform: translate(-50%, -50%) scale(1.1);
   }
   100% {
-    box-shadow: 
+    box-shadow:
       0 0 20px rgba(255, 215, 0, 0.4),
       0 0 40px rgba(255, 165, 0, 0.3),
       0 0 60px rgba(255, 140, 0, 0.2);
@@ -129,10 +122,7 @@ interface WeatherBackgroundProps {
   children?: React.ReactNode;
 }
 
-export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
-  condition,
-  children,
-}) => {
+export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({ condition, children }) => {
   const renderRainAnimation = () => (
     <>
       {Array.from({ length: 50 }, (_, i) => (
@@ -143,8 +133,7 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
             left: `${Math.random() * 100}%`,
             width: "5px",
             height: "50px",
-            background:
-              "linear-gradient(to bottom, transparent, #42A5F5, transparent)",
+            background: "linear-gradient(to bottom, transparent, #42A5F5, transparent)",
             animation: `${rainDrop} ${1 + Math.random() * 2}s linear infinite`,
             animationDelay: `${Math.random() * 2}s`,
             zIndex: 1,
@@ -167,8 +156,7 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
             backgroundColor: "white",
             borderRadius: "50%",
             opacity: 0.9,
-            boxShadow:
-              "0 0 8px rgba(255, 255, 255, 0.8), inset 0 0 8px rgba(255, 255, 255, 0.3)",
+            boxShadow: "0 0 8px rgba(255, 255, 255, 0.8), inset 0 0 8px rgba(255, 255, 255, 0.3)",
             animation: `${snowFlake} ${4 + Math.random() * 4}s linear infinite`,
             animationDelay: `${Math.random() * 4}s`,
             zIndex: 1,
@@ -190,9 +178,7 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
             height: `${40 + Math.random() * 30}px`,
             backgroundColor: "rgba(255, 255, 255, 0.7)",
             borderRadius: "50px",
-            animation: `${cloudFloat} ${
-              20 + Math.random() * 15
-            }s linear infinite`,
+            animation: `${cloudFloat} ${20 + Math.random() * 15}s linear infinite`,
             animationDelay: `${Math.random() * 15}s`,
             zIndex: 1,
             boxShadow: "0 4px 15px rgba(255, 255, 255, 0.3)",
@@ -243,8 +229,7 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
           left: "50%",
           width: "50px",
           height: "50px",
-          background:
-            "radial-gradient(circle, #FFD700 0%, #FFA500 70%, #FF8C00 100%)",
+          background: "radial-gradient(circle, #FFD700 0%, #FFA500 70%, #FF8C00 100%)",
           borderRadius: "50%",
           animation: `${sunPulse} 3s ease-in-out infinite`,
         }}
@@ -295,15 +280,13 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
             left: "30%",
             width: "4px",
             height: "200px",
-            background:
-              "linear-gradient(to bottom, #ffffff, #87ceeb, transparent)",
+            background: "linear-gradient(to bottom, #ffffff, #87ceeb, transparent)",
             borderRadius: "2px",
             transformOrigin: "top center",
             animation: "lightningBolt 4s infinite",
             animationDelay: "1s",
             zIndex: 2,
-            boxShadow:
-              "0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(135, 206, 235, 0.4)",
+            boxShadow: "0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(135, 206, 235, 0.4)",
           }}
         >
           {/* Branch 1 */}
@@ -342,15 +325,13 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
             left: "65%",
             width: "3px",
             height: "180px",
-            background:
-              "linear-gradient(to bottom, #ffffff, #87ceeb, transparent)",
+            background: "linear-gradient(to bottom, #ffffff, #87ceeb, transparent)",
             borderRadius: "2px",
             transformOrigin: "top center",
             animation: "lightningBolt 4s infinite",
             animationDelay: "1.5s",
             zIndex: 2,
-            boxShadow:
-              "0 0 15px rgba(255, 255, 255, 0.6), 0 0 30px rgba(135, 206, 235, 0.3)",
+            boxShadow: "0 0 15px rgba(255, 255, 255, 0.6), 0 0 30px rgba(135, 206, 235, 0.3)",
           }}
         >
           <div
@@ -375,15 +356,13 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
             left: "45%",
             width: "2px",
             height: "150px",
-            background:
-              "linear-gradient(to bottom, #ffffff, #87ceeb, transparent)",
+            background: "linear-gradient(to bottom, #ffffff, #87ceeb, transparent)",
             borderRadius: "2px",
             transformOrigin: "top center",
             animation: "lightningBolt 4s infinite",
             animationDelay: "2.2s",
             zIndex: 2,
-            boxShadow:
-              "0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(135, 206, 235, 0.2)",
+            boxShadow: "0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(135, 206, 235, 0.2)",
           }}
         />
       </div>
@@ -401,12 +380,9 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
             left: "-50px",
             width: "200px",
             height: "40px",
-            background:
-              "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
+            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
             borderRadius: "20px",
-            animation: `${mistFloat} ${
-              8 + Math.random() * 4
-            }s ease-in-out infinite`,
+            animation: `${mistFloat} ${8 + Math.random() * 4}s ease-in-out infinite`,
             animationDelay: `${Math.random() * 4}s`,
             zIndex: 1,
           }}
@@ -452,9 +428,8 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({
       sx={{
         minHeight: "90%",
         height: "100%",
-        width: "98%",
+        width: "100%",
         background: getWeatherGradient(condition),
-        p: 2,
         overflowX: "hidden",
         overflowY: "auto",
         position: "relative",

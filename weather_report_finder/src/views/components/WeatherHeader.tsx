@@ -15,27 +15,22 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Search, Menu } from "@mui/icons-material";
+import { fetchWeather } from "@slices/weatherSlice";
 import { fetchLocation } from "@slices/locationSlice";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { RequestState, type CitySuggestion } from "@configs/types";
 
 interface WeatherHeaderProps {
-  setSearchQuery: (query: string) => void;
-  suggestedCity: CitySuggestion[];
-  loadingSuggestions: boolean;
-  onCitySelect: (cityName: string) => void;
-  searchQuery: string;
   onMenuClick?: () => void;
 }
 
-const WeatherHeader: React.FC<WeatherHeaderProps> = ({ onCitySelect, onMenuClick }) => {
+const WeatherHeader: React.FC<WeatherHeaderProps> = ({ onMenuClick }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const suggestedCity = useAppSelector((state) => state.location.locationSuggestion);
   const suggestedCityLoadingSate = useAppSelector((state) => state.location.state);
   const loadingSuggestions = suggestedCityLoadingSate === RequestState.LOADING;
@@ -149,7 +144,7 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({ onCitySelect, onMenuClick
               }}
               onChange={(_, selectedOption) => {
                 if (selectedOption) {
-                  onCitySelect(selectedOption.name);
+                  dispatch(fetchWeather(selectedOption.name));
                   setSearchQuery("");
                   setOpen(false);
                 }

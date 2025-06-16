@@ -1,9 +1,9 @@
 import "./App.css";
 import { store } from "@slices/store";
 import { Provider } from "react-redux";
+import { UIMessages } from "@configs/types";
 import WeatherView from "@views/WeatherView";
 import { SnackbarProvider } from "notistack";
-import { UIMessages } from "@configs/types";
 import { ErrorBoundary } from "@views/ErrorBoundary";
 
 function App() {
