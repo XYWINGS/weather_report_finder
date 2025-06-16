@@ -25,40 +25,23 @@ import {
   Visibility,
   BeachAccess,
 } from "@mui/icons-material";
-import {
-  rainCodes,
-  clearCodes,
-  cloudCodes,
-  RequestState,
-  partlyCloudyCodes,
-} from "@configs/types";
 import { getUserLocation } from "@configs/utils";
 import React, { useEffect, useState } from "react";
 import { fetchWeather } from "@slices/weatherSlice";
-import { fetchLocation } from "@slices/locationSlice";
-import WeatherHeader from "./components/WeatherHeader";
 import { WeatherCard } from "./components/WeatherCard";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { WeatherStatusComponent } from "./components/WeatherStatusComponent";
 import { WeatherBackgroundAnimation } from "./components/WeatherBackgroundAnimation";
+import { rainCodes, clearCodes, cloudCodes, RequestState, partlyCloudyCodes } from "@configs/types";
 
 const WeatherApp: React.FC = () => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const weatherDataResponse = useAppSelector(
-    (state) => state.weather.weatherData
-  );
+  const weatherDataResponse = useAppSelector((state) => state.weather.weatherData);
   const dataLoadingState = useAppSelector((state) => state.weather.state);
-  const suggestedCity = useAppSelector(
-    (state) => state.location.locationSuggestion
-  );
-  const suggestedCityLoadingSate = useAppSelector(
-    (state) => state.location.state
-  );
-  const loadingSuggestions = suggestedCityLoadingSate === RequestState.LOADING;
+
   const conditionCode = weatherDataResponse?.current?.condition?.code ?? 1000;
 
   useEffect(() => {
@@ -68,13 +51,6 @@ const WeatherApp: React.FC = () => {
       setLoading(false);
     }
   }, [dataLoadingState]);
-
-  // Trigger fetch on typing
-  useEffect(() => {
-    if (searchQuery && searchQuery.length > 2) {
-      dispatch(fetchLocation(searchQuery));
-    }
-  }, [searchQuery]);
 
   // Fetch data initially based on the location
   useEffect(() => {
@@ -97,29 +73,15 @@ const WeatherApp: React.FC = () => {
     const cloudColor = "#90A4AE";
 
     if (rainCodes.has(conditionCode)) {
-      return (
-        <BeachAccess
-          {...iconProps}
-          sx={{ ...iconProps.sx, color: "#42A5F5" }}
-        />
-      );
+      return <BeachAccess {...iconProps} sx={{ ...iconProps.sx, color: "#42A5F5" }} />;
     } else if (cloudCodes.has(conditionCode)) {
       if (partlyCloudyCodes.has(conditionCode)) {
-        return (
-          <WbCloudy
-            {...iconProps}
-            sx={{ ...iconProps.sx, color: cloudColor }}
-          />
-        );
+        return <WbCloudy {...iconProps} sx={{ ...iconProps.sx, color: cloudColor }} />;
       } else {
-        return (
-          <Cloud {...iconProps} sx={{ ...iconProps.sx, color: "#78909C" }} />
-        );
+        return <Cloud {...iconProps} sx={{ ...iconProps.sx, color: "#78909C" }} />;
       }
     } else if (clearCodes.has(conditionCode)) {
-      return (
-        <WbSunny {...iconProps} sx={{ ...iconProps.sx, color: sunColor }} />
-      );
+      return <WbSunny {...iconProps} sx={{ ...iconProps.sx, color: sunColor }} />;
     }
 
     // Default fallback
@@ -165,23 +127,20 @@ const WeatherApp: React.FC = () => {
       {dataLoadingState === RequestState.LOADING && <WeatherStatusComponent />}
 
       {dataLoadingState === RequestState.FAILED && (
-        <WeatherStatusComponent
-          isError={true}
-          onRetry={() => window.location.reload()}
-        />
+        <WeatherStatusComponent isError={true} onRetry={() => window.location.reload()} />
       )}
 
       {dataLoadingState === RequestState.SUCCEEDED && weatherDataResponse && (
         <WeatherBackgroundAnimation condition={conditionCode}>
-          <Container maxWidth="lg" sx={{ p: 2 }}>
+          <Container maxWidth="lg" sx={{ p: 2, pt: 0 }}>
             {/* Header */}
-            <WeatherHeader
+            {/* <WeatherHeader
               setSearchQuery={setSearchQuery}
               suggestedCity={Array.isArray(suggestedCity) ? suggestedCity : []}
               loadingSuggestions={loadingSuggestions}
               onCitySelect={(cityName) => dispatch(fetchWeather(cityName))}
               searchQuery={searchQuery}
-            />
+            /> */}
 
             {/* Main Weather Card */}
             <Card
@@ -199,11 +158,7 @@ const WeatherApp: React.FC = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Box display="flex" alignItems="center" mb={2}>
                       <LocationOn sx={{ color: "white", mr: 1 }} />
-                      <Typography
-                        variant={isMobile ? "h6" : "h5"}
-                        color="white"
-                        fontWeight="bold"
-                      >
+                      <Typography variant={isMobile ? "h6" : "h5"} color="white" fontWeight="bold">
                         {formatLocation()}
                       </Typography>
                     </Box>
@@ -228,12 +183,7 @@ const WeatherApp: React.FC = () => {
                       >
                         {Math.round(weatherDataResponse.current.temp_c)}°
                       </Typography>
-                      <Box>
-                        {getWeatherIcon(
-                          conditionCode,
-                          weatherDataResponse.current.is_day
-                        )}
-                      </Box>
+                      <Box>{getWeatherIcon(conditionCode, weatherDataResponse.current.is_day)}</Box>
                     </Box>
 
                     <Typography
@@ -244,23 +194,15 @@ const WeatherApp: React.FC = () => {
                     >
                       {weatherDataResponse.current.condition.text}
                     </Typography>
-                    <Typography
-                      variant="body1"
-                      color="rgba(255,255,255,0.7)"
-                      textAlign={{ xs: "center", sm: "left" }}
-                    >
-                      Feels like{" "}
-                      {Math.round(weatherDataResponse.current.feelslike_c)}°C
+                    <Typography variant="body1" color="rgba(255,255,255,0.7)" textAlign={{ xs: "center", sm: "left" }}>
+                      Feels like {Math.round(weatherDataResponse.current.feelslike_c)}°C
                     </Typography>
                   </Grid>
 
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Box textAlign={{ xs: "center", md: "right" }}>
                       <Chip
-                        label={`Last updated: ${
-                          weatherDataResponse.current.last_updated ||
-                          "Loading..."
-                        }`}
+                        label={`Last updated: ${weatherDataResponse.current.last_updated || "Loading..."}`}
                         size={isMobile ? "small" : "medium"}
                         sx={{
                           bgcolor: "rgba(255,255,255,0.2)",
@@ -284,7 +226,7 @@ const WeatherApp: React.FC = () => {
 
             {/* Weather Details Grid */}
             <Grid container spacing={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
-              <Grid size={{ xs: 4, md: 4, sm: 4 }}>
+              <Grid size={{ xs: 12, md: 4, sm: 4 }}>
                 <WeatherCard
                   icon={<Grain />}
                   title="Humidity"
@@ -294,7 +236,7 @@ const WeatherApp: React.FC = () => {
                 />
               </Grid>
 
-              <Grid size={{ xs: 4, md: 4, sm: 4 }}>
+              <Grid size={{ xs: 12, md: 4, sm: 4 }}>
                 <WeatherCard
                   icon={<Air />}
                   title="Wind Speed"
@@ -304,7 +246,7 @@ const WeatherApp: React.FC = () => {
                   subtitle={`${weatherDataResponse.current.wind_dir} ${weatherDataResponse.current.wind_degree}°`}
                 />
               </Grid>
-              <Grid size={{ xs: 4, md: 4, sm: 4 }}>
+              <Grid size={{ xs: 12, md: 4, sm: 4 }}>
                 <WeatherCard
                   icon={<Visibility />}
                   title="Visibility"
@@ -322,9 +264,7 @@ const WeatherApp: React.FC = () => {
                 mb: { xs: 3, sm: 4 },
                 background: `linear-gradient(135deg, ${getUVIndexColor(
                   weatherDataResponse.current.uv
-                )}20 0%, ${getUVIndexColor(
-                  weatherDataResponse.current.uv
-                )}10 100%)`,
+                )}20 0%, ${getUVIndexColor(weatherDataResponse.current.uv)}10 100%)`,
                 backdropFilter: "blur(10px)",
                 border: "1px solid rgba(255,255,255,0.2)",
               }}
@@ -335,17 +275,11 @@ const WeatherApp: React.FC = () => {
                     <Box display="flex" alignItems="center" mb={1}>
                       <LightMode
                         sx={{
-                          color: getUVIndexColor(
-                            weatherDataResponse.current.uv
-                          ),
+                          color: getUVIndexColor(weatherDataResponse.current.uv),
                           mr: 1,
                         }}
                       />
-                      <Typography
-                        variant={isMobile ? "h6" : "h5"}
-                        color="white"
-                        fontWeight={500}
-                      >
+                      <Typography variant={isMobile ? "h6" : "h5"} color="white" fontWeight={500}>
                         UV Index Details
                       </Typography>
                     </Box>
@@ -361,9 +295,7 @@ const WeatherApp: React.FC = () => {
                         borderRadius: 4,
                         backgroundColor: "rgba(255,255,255,0.2)",
                         "& .MuiLinearProgress-bar": {
-                          backgroundColor: getUVIndexColor(
-                            weatherDataResponse.current.uv
-                          ),
+                          backgroundColor: getUVIndexColor(weatherDataResponse.current.uv),
                           borderRadius: 4,
                         },
                       }}
@@ -375,9 +307,7 @@ const WeatherApp: React.FC = () => {
                         variant={isMobile ? "h3" : "h2"}
                         fontWeight="bold"
                         sx={{
-                          color: getUVIndexColor(
-                            weatherDataResponse.current.uv
-                          ),
+                          color: getUVIndexColor(weatherDataResponse.current.uv),
                         }}
                         gutterBottom
                       >
@@ -386,9 +316,7 @@ const WeatherApp: React.FC = () => {
                       <Chip
                         label={getUVIndexText(weatherDataResponse.current.uv)}
                         sx={{
-                          backgroundColor: getUVIndexColor(
-                            weatherDataResponse.current.uv
-                          ),
+                          backgroundColor: getUVIndexColor(weatherDataResponse.current.uv),
                           color: "white",
                           fontWeight: "bold",
                         }}
@@ -414,11 +342,7 @@ const WeatherApp: React.FC = () => {
                   <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                     <Box display="flex" alignItems="center" mb={2}>
                       <Thermostat sx={{ color: "white", mr: 1 }} />
-                      <Typography
-                        variant={isMobile ? "h6" : "h5"}
-                        color="white"
-                        fontWeight={500}
-                      >
+                      <Typography variant={isMobile ? "h6" : "h5"} color="white" fontWeight={500}>
                         Temperature Details
                       </Typography>
                     </Box>
@@ -463,20 +387,11 @@ const WeatherApp: React.FC = () => {
                   <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                     <Box display="flex" alignItems="center" mb={2}>
                       <Speed sx={{ color: "white", mr: 1 }} />
-                      <Typography
-                        variant={isMobile ? "h6" : "h5"}
-                        color="white"
-                        fontWeight={500}
-                      >
+                      <Typography variant={isMobile ? "h6" : "h5"} color="white" fontWeight={500}>
                         Atmospheric Pressure
                       </Typography>
                     </Box>
-                    <Typography
-                      variant={isMobile ? "h4" : "h3"}
-                      color="white"
-                      fontWeight="bold"
-                      gutterBottom
-                    >
+                    <Typography variant={isMobile ? "h4" : "h3"} color="white" fontWeight="bold" gutterBottom>
                       {Math.round(weatherDataResponse.current.pressure_mb)}
                       <Typography
                         component="span"
@@ -488,8 +403,7 @@ const WeatherApp: React.FC = () => {
                       </Typography>
                     </Typography>
                     <Typography variant="body2" color="rgba(255,255,255,0.7)">
-                      Standard atmospheric pressure •{" "}
-                      {weatherDataResponse.current.pressure_in}" Hg
+                      Standard atmospheric pressure • {weatherDataResponse.current.pressure_in}" Hg
                     </Typography>
                   </CardContent>
                 </Card>
@@ -511,20 +425,11 @@ const WeatherApp: React.FC = () => {
                   <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                     <Box display="flex" alignItems="center" mb={2}>
                       <BeachAccess sx={{ color: "white", mr: 1 }} />
-                      <Typography
-                        variant={isMobile ? "h6" : "h5"}
-                        color="white"
-                        fontWeight={500}
-                      >
+                      <Typography variant={isMobile ? "h6" : "h5"} color="white" fontWeight={500}>
                         Precipitation
                       </Typography>
                     </Box>
-                    <Typography
-                      variant={isMobile ? "h4" : "h3"}
-                      color="white"
-                      fontWeight="bold"
-                      gutterBottom
-                    >
+                    <Typography variant={isMobile ? "h4" : "h3"} color="white" fontWeight="bold" gutterBottom>
                       {weatherDataResponse.current.precip_mm}
                       <Typography
                         component="span"
@@ -536,8 +441,7 @@ const WeatherApp: React.FC = () => {
                       </Typography>
                     </Typography>
                     <Typography variant="body2" color="rgba(255,255,255,0.7)">
-                      Last hour • {weatherDataResponse.current.precip_in}"
-                      inches
+                      Last hour • {weatherDataResponse.current.precip_in}" inches
                     </Typography>
                   </CardContent>
                 </Card>
@@ -556,20 +460,11 @@ const WeatherApp: React.FC = () => {
                   <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                     <Box display="flex" alignItems="center" mb={2}>
                       <CloudQueue sx={{ color: "white", mr: 1 }} />
-                      <Typography
-                        variant={isMobile ? "h6" : "h5"}
-                        color="white"
-                        fontWeight={500}
-                      >
+                      <Typography variant={isMobile ? "h6" : "h5"} color="white" fontWeight={500}>
                         Cloud Cover
                       </Typography>
                     </Box>
-                    <Typography
-                      variant={isMobile ? "h4" : "h3"}
-                      color="white"
-                      fontWeight="bold"
-                      gutterBottom
-                    >
+                    <Typography variant={isMobile ? "h4" : "h3"} color="white" fontWeight="bold" gutterBottom>
                       {weatherDataResponse.current.cloud}
                       <Typography
                         component="span"

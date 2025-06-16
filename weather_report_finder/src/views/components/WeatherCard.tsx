@@ -1,12 +1,4 @@
-import {
-  Box,
-  Card,
-  Avatar,
-  useTheme,
-  Typography,
-  CardContent,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Card, Avatar, useTheme, Typography, CardContent, useMediaQuery } from "@mui/material";
 
 interface WeatherCardProps {
   icon: React.ReactNode;
@@ -16,14 +8,7 @@ interface WeatherCardProps {
   color?: "primary" | "secondary" | "success" | "info" | "warning" | "error";
   subtitle?: string;
 }
-export const WeatherCard: React.FC<WeatherCardProps> = ({
-  icon,
-  title,
-  value,
-  unit,
-  color = "primary",
-  subtitle,
-}) => {
+export const WeatherCard: React.FC<WeatherCardProps> = ({ icon, title, value, unit, color = "primary", subtitle }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -42,8 +27,8 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
           left: 0,
           right: 0,
           bottom: 0,
-          background: `linear-gradient(135deg, 
-          rgba(255,255,255,0.25) 0%, 
+          background: `linear-gradient(135deg,
+          rgba(255,255,255,0.25) 0%,
           rgba(255,255,255,0.15) 50%,
           rgba(255,255,255,0.05) 100%
         )`,
@@ -61,8 +46,8 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
         "&:hover": {
           transform: "translateY(-8px) scale(1.02)",
           "&::before": {
-            background: `linear-gradient(135deg, 
-            rgba(255,255,255,0.35) 0%, 
+            background: `linear-gradient(135deg,
+            rgba(255,255,255,0.35) 0%,
             rgba(255,255,255,0.25) 50%,
             rgba(255,255,255,0.15) 100%
           )`,
@@ -96,8 +81,8 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
               transform: "translate(-50%, -50%)",
               width: { xs: 80, sm: 90 },
               height: { xs: 80, sm: 90 },
-              background: `linear-gradient(135deg, 
-              ${theme.palette[color].light}20, 
+              background: `linear-gradient(135deg,
+              ${theme.palette[color].light}20,
               ${theme.palette[color].main}15
             )`,
               borderRadius: "50%",
@@ -108,8 +93,8 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
         >
           <Avatar
             sx={{
-              background: `linear-gradient(135deg, 
-              ${theme.palette[color].light} 0%, 
+              background: `linear-gradient(135deg,
+              ${theme.palette[color].light} 0%,
               ${theme.palette[color].main} 100%
             )`,
               width: { xs: 56, sm: 64 },
@@ -129,9 +114,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
               },
             }}
           >
-            <Box sx={{ fontSize: { xs: 24, sm: 28 }, color: "white" }}>
-              {icon}
-            </Box>
+            <Box sx={{ fontSize: { xs: 24, sm: 28 }, color: "white" }}>{icon}</Box>
           </Avatar>
         </Box>
 
@@ -214,9 +197,9 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
             left: "20%",
             right: "20%",
             height: 3,
-            background: `linear-gradient(90deg, 
-            transparent 0%, 
-            ${theme.palette[color].main}60 50%, 
+            background: `linear-gradient(90deg,
+            transparent 0%,
+            ${theme.palette[color].main}60 50%,
             transparent 100%
           )`,
             borderRadius: "2px 2px 0 0",

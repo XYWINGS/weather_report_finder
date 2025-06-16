@@ -1,19 +1,23 @@
 import {
   Box,
   Paper,
-  Divider,
+  AppBar,
+  Toolbar,
   useTheme,
-  TextField,
   Container,
+  TextField,
+  IconButton,
   Typography,
   Autocomplete,
   useMediaQuery,
   InputAdornment,
   CircularProgress,
 } from "@mui/material";
-import React, { useState } from "react";
-import { Search } from "@mui/icons-material";
-import type { CitySuggestion } from "@configs/types";
+import React, { useEffect, useState } from "react";
+import { Search, Menu } from "@mui/icons-material";
+import { fetchLocation } from "@slices/locationSlice";
+import { useAppDispatch, useAppSelector } from "@slices/store";
+import { RequestState, type CitySuggestion } from "@configs/types";
 
 interface WeatherHeaderProps {
   setSearchQuery: (query: string) => void;
@@ -21,138 +25,110 @@ interface WeatherHeaderProps {
   loadingSuggestions: boolean;
   onCitySelect: (cityName: string) => void;
   searchQuery: string;
+  onMenuClick?: () => void;
 }
 
-const WeatherHeader: React.FC<WeatherHeaderProps> = ({
-  setSearchQuery,
-  suggestedCity,
-  loadingSuggestions,
-  onCitySelect,
-  searchQuery,
-}) => {
+const WeatherHeader: React.FC<WeatherHeaderProps> = ({ onCitySelect, onMenuClick }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const suggestedCity = useAppSelector((state) => state.location.locationSuggestion);
+  const suggestedCityLoadingSate = useAppSelector((state) => state.location.state);
+  const loadingSuggestions = suggestedCityLoadingSate === RequestState.LOADING;
+
+  // Trigger fetch on typing
+  useEffect(() => {
+    if (searchQuery && searchQuery.length > 2) {
+      dispatch(fetchLocation(searchQuery));
+    }
+  }, [searchQuery]);
 
   return (
-    <Box
-      component="header"
+    <AppBar
+      position="sticky"
+      elevation={0}
       sx={{
-        position: "relative",
-        mb: { xs: 4, sm: 6 },
-        "&::before": {
-          content: '""',
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background:
-            "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)",
-          backdropFilter: "blur(20px)",
-          borderRadius: { xs: 0, sm: 3 },
-          border: "1px solid rgba(255,255,255,0.2)",
-          zIndex: -1,
-        },
+        background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)",
+        backdropFilter: "blur(20px)",
+        borderBottom: "1px solid rgba(255,255,255,0.2)",
+        color: "white",
+        overflow: "hidden",
       }}
     >
       <Container maxWidth="lg">
-        <Paper
-          elevation={0}
+        <Toolbar
           sx={{
-            background: "transparent",
-            py: { xs: 3, sm: 4, md: 5 },
-            px: { xs: 2, sm: 3, md: 4 },
-            borderRadius: { xs: 0, sm: 3 },
+            minHeight: { xs: 64, sm: 70, md: 80 },
+            px: { xs: 1, sm: 2 },
+            flexDirection: { xs: "column", md: "row" },
+            alignItems: { xs: "stretch", md: "center" },
+            gap: { xs: 2, md: 3 },
+            py: { xs: 2, md: 0 },
           }}
         >
-          {/* App Branding Section */}
-          <Box textAlign="center" mb={{ xs: 4, sm: 5 }}>
+          {/* Top row on mobile: Menu + Logo */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: { xs: "100%", md: "auto" },
+              mb: { xs: 1, md: 0 },
+            }}
+          >
+            {/* Menu Button - Mobile Only */}
+            {isMobile && onMenuClick && (
+              <IconButton
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                onClick={onMenuClick}
+                sx={{
+                  mr: 1,
+                  color: "rgba(255,255,255,0.9)",
+                }}
+              >
+                <Menu />
+              </IconButton>
+            )}
+
+            {/* App Logo/Title */}
             <Typography
-              variant={isMobile ? "h3" : "h2"}
+              variant={isSmallMobile ? "h5" : isMobile ? "h4" : "h3"}
               component="h1"
-              fontWeight={800}
               sx={{
+                fontWeight: 600,
                 background: "linear-gradient(45deg, #ffffff 30%, #e3f2fd 70%)",
                 backgroundClip: "text",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
-                textShadow: "none",
-                mb: { xs: 1, sm: 2 },
                 letterSpacing: "-0.02em",
-                fontSize: { xs: "2.5rem", sm: "3.5rem", md: "4rem" },
+                flexGrow: { xs: 1, md: 0 },
+                textAlign: { xs: "center", md: "left" },
+                mr: { md: 4 },
               }}
             >
               Rain Or Shine
             </Typography>
 
-            <Typography
-              variant={isMobile ? "subtitle1" : "h6"}
-              color="rgba(255,255,255,0.85)"
-              sx={{
-                textShadow: "1px 1px 3px rgba(0,0,0,0.4)",
-                px: { xs: 2, sm: 0 },
-                fontWeight: 300,
-                letterSpacing: "0.5px",
-                maxWidth: 500,
-                mx: "auto",
-                lineHeight: 1.6,
-              }}
-            >
-              Your trusted companion for real-time weather insights and
-              forecasts
-            </Typography>
+            {/* Spacer for mobile layout balance */}
+            {isMobile && (
+              <Box sx={{ width: 40 }} /> // Balance the menu button width
+            )}
           </Box>
 
-          {/* Decorative Divider */}
-          <Divider
-            sx={{
-              mb: { xs: 3, sm: 4 },
-              "&::before, &::after": {
-                borderColor: "rgba(255,255,255,0.3)",
-              },
-            }}
-          >
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: "50%",
-                background:
-                  "linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                border: "1px solid rgba(255,255,255,0.3)",
-              }}
-            >
-              <Search sx={{ color: "rgba(255,255,255,0.7)", fontSize: 20 }} />
-            </Box>
-          </Divider>
-
-          {/* Enhanced Search Section */}
+          {/* Search Section */}
           <Box
             sx={{
-              maxWidth: 650,
-              mx: "auto",
-              position: "relative",
+              flex: { md: 1 },
+              maxWidth: { xs: "100%", md: 500, lg: 600 },
+              width: "100%",
             }}
           >
-            <Typography
-              variant="subtitle2"
-              color="rgba(255,255,255,0.8)"
-              sx={{
-                mb: 2,
-                textAlign: "center",
-                fontWeight: 500,
-                textTransform: "uppercase",
-                letterSpacing: "1px",
-                fontSize: "0.75rem",
-              }}
-            >
-              Discover Weather Anywhere
-            </Typography>
-
             <Autocomplete
               open={open}
               onOpen={() => {
@@ -163,9 +139,7 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({
               onClose={() => setOpen(false)}
               loading={loadingSuggestions}
               options={Array.isArray(suggestedCity) ? suggestedCity : []}
-              getOptionLabel={(option: CitySuggestion) =>
-                `${option.name}, ${option.region}, ${option.country}`
-              }
+              getOptionLabel={(option: CitySuggestion) => `${option.name}, ${option.region}, ${option.country}`}
               inputValue={searchQuery}
               onInputChange={(_, newInputValue, reason) => {
                 if (reason !== "reset") {
@@ -183,15 +157,21 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({
               renderInput={(params) => (
                 <TextField
                   {...params}
+                  size={isMobile ? "small" : "medium"}
                   fullWidth
                   variant="outlined"
-                  placeholder="Enter city name or location..."
+                  placeholder={isMobile ? "Search city..." : "Enter city name or location..."}
                   InputProps={{
                     ...params.InputProps,
                     startAdornment: (
                       <>
                         <InputAdornment position="start">
-                          <Search sx={{ color: "rgba(0,0,0,0.6)" }} />
+                          <Search
+                            sx={{
+                              color: "rgba(0,0,0,0.6)",
+                              fontSize: isMobile ? "1.2rem" : "1.5rem",
+                            }}
+                          />
                         </InputAdornment>
                         {params.InputProps.startAdornment}
                       </>
@@ -199,10 +179,7 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({
                     endAdornment: (
                       <>
                         {loadingSuggestions ? (
-                          <CircularProgress
-                            size={22}
-                            sx={{ color: "primary.main" }}
-                          />
+                          <CircularProgress size={isMobile ? 18 : 22} sx={{ color: "primary.main" }} />
                         ) : null}
                         {params.InputProps.endAdornment}
                       </>
@@ -210,24 +187,24 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({
                   }}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      bgcolor: "rgba(255,255,255,0.98)",
-                      backdropFilter: "blur(15px)",
-                      borderRadius: 3,
-                      fontSize: "1.1rem",
-                      py: 0.5,
-                      border: "2px solid transparent",
-                      boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
-                      transition: "all 0.3s ease",
+                      bgcolor: "rgba(255,255,255,0.95)",
+                      backdropFilter: "blur(10px)",
+                      borderRadius: { xs: 2, sm: 3 },
+                      fontSize: { xs: "0.95rem", sm: "1rem", md: "1.1rem" },
+                      minHeight: { xs: 40, sm: 48, md: 56 },
+                      border: "1px solid rgba(255,255,255,0.3)",
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
+                      transition: "all 0.2s ease",
                       "&:hover": {
                         bgcolor: "rgba(255,255,255,1)",
-                        boxShadow: "0 12px 40px rgba(0,0,0,0.15)",
-                        transform: "translateY(-2px)",
+                        boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
+                        transform: "translateY(-1px)",
                       },
                       "&.Mui-focused": {
                         bgcolor: "rgba(255,255,255,1)",
-                        border: "2px solid rgba(25,118,210,0.5)",
-                        boxShadow: "0 12px 40px rgba(25,118,210,0.2)",
-                        transform: "translateY(-2px)",
+                        border: "1px solid rgba(25,118,210,0.8)",
+                        boxShadow: "0 6px 20px rgba(25,118,210,0.2)",
+                        transform: "translateY(-1px)",
                       },
                       "& fieldset": {
                         border: "none",
@@ -236,6 +213,7 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({
                     "& .MuiInputBase-input": {
                       color: "rgba(0,0,0,0.87)",
                       fontWeight: 500,
+                      py: { xs: 1, sm: 1.5 },
                       "&::placeholder": {
                         color: "rgba(0,0,0,0.5)",
                         opacity: 1,
@@ -249,20 +227,32 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({
                 <Paper
                   {...props}
                   sx={{
-                    mt: 1,
+                    mt: 0.5,
                     borderRadius: 2,
-                    boxShadow: "0 16px 48px rgba(0,0,0,0.2)",
-                    border: "1px solid rgba(255,255,255,0.1)",
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+                    border: "1px solid rgba(255,255,255,0.2)",
                     backdropFilter: "blur(20px)",
                     bgcolor: "rgba(255,255,255,0.95)",
+                    maxHeight: { xs: 200, sm: 300 },
+                    "& .MuiAutocomplete-option": {
+                      fontSize: { xs: "0.9rem", sm: "1rem" },
+                      py: { xs: 1, sm: 1.5 },
+                    },
                   }}
                 />
               )}
+              componentsProps={{
+                popper: {
+                  style: {
+                    zIndex: theme.zIndex.modal + 1,
+                  },
+                },
+              }}
             />
           </Box>
-        </Paper>
+        </Toolbar>
       </Container>
-    </Box>
+    </AppBar>
   );
 };
 
