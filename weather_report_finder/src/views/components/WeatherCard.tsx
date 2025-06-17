@@ -14,7 +14,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({ icon, title, value, un
 
   return (
     <Card
-      elevation={0}
+      elevation={3}
       sx={{
         height: "100%",
         position: "relative",

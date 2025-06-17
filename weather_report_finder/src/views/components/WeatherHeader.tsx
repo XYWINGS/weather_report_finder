@@ -45,7 +45,7 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({ onMenuClick }) => {
   return (
     <AppBar
       position="sticky"
-      elevation={0}
+      elevation={5}
       sx={{
         background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)",
         backdropFilter: "blur(20px)",

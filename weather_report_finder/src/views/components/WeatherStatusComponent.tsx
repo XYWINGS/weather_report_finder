@@ -1,22 +1,5 @@
-import {
-  Air,
-  Cloud,
-  WbSunny,
-  Warning,
-  Refresh,
-  WbCloudy,
-  ErrorOutline,
-} from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  useTheme,
-  Container,
-  keyframes,
-  Typography,
-  useMediaQuery,
-  LinearProgress,
-} from "@mui/material";
+import { Air, Cloud, WbSunny, Warning, Refresh, WbCloudy, ErrorOutline } from "@mui/icons-material";
+import { Box, Button, useTheme, Container, keyframes, Typography, useMediaQuery, LinearProgress } from "@mui/material";
 import React from "react";
 
 // Loading animation keyframes
@@ -212,9 +195,7 @@ export const WeatherStatusComponent: React.FC<WeatherStatusProps> = ({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                animation: isError
-                  ? `${shake} 0.5s ease-in-out 3`
-                  : `${spin} 3s linear infinite`,
+                animation: isError ? `${shake} 0.5s ease-in-out 3` : `${spin} 3s linear infinite`,
                 backdropFilter: "blur(10px)",
               }}
             >
@@ -227,9 +208,7 @@ export const WeatherStatusComponent: React.FC<WeatherStatusProps> = ({
                 position: "absolute",
                 width: "100%",
                 height: "100%",
-                animation: isError
-                  ? `${pulse} 2s ease-in-out infinite`
-                  : `${spin} 8s linear infinite reverse`,
+                animation: isError ? `${pulse} 2s ease-in-out infinite` : `${spin} 8s linear infinite reverse`,
               }}
             >
               {getOrbitingElements()}
@@ -247,7 +226,7 @@ export const WeatherStatusComponent: React.FC<WeatherStatusProps> = ({
               mb: 2,
             }}
           >
-            Weather Reporter
+            Rain OR Shine
           </Typography>
 
           {/* Status message */}
@@ -272,8 +251,7 @@ export const WeatherStatusComponent: React.FC<WeatherStatusProps> = ({
                   borderRadius: 4,
                   backgroundColor: "rgba(255,255,255,0.2)",
                   "& .MuiLinearProgress-bar": {
-                    background:
-                      "linear-gradient(90deg, #FFD700, #FFA500, #FF6B6B)",
+                    background: "linear-gradient(90deg, #FFD700, #FFA500, #FF6B6B)",
                     borderRadius: 4,
                     animation: `${shimmer} 2s infinite`,
                   },
@@ -339,14 +317,8 @@ export const WeatherStatusComponent: React.FC<WeatherStatusProps> = ({
             )
           )}
 
-          <Typography
-            variant="body2"
-            color="rgba(255,255,255,0.7)"
-            sx={{ mt: 3 }}
-          >
-            {isError
-              ? "Please check your connection and try again"
-              : "Fetching the latest weather information..."}
+          <Typography variant="body2" color="rgba(255,255,255,0.7)" sx={{ mt: 3 }}>
+            {isError ? "Please check your connection and try again" : "Fetching the latest weather information..."}
           </Typography>
         </Box>
       </Container>

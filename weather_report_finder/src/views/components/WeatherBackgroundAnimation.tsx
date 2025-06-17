@@ -399,7 +399,7 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({ c
     } else if (cloudCodes.has(conditionCode)) {
       return "linear-gradient(135deg, #bdc3c7 0%, #95a5a6 50%, #7f8c8d 100%)";
     } else if (clearCodes.has(conditionCode)) {
-      return "linear-gradient(135deg, #87CEEB 0%, #98D8E8 50%, #87CEEB 100%)";
+      return "linear-gradient(135deg,rgb(48, 183, 236) 0%, #98D8E8 50%, #87CEEB 100%)";
     } else if (mistCodes.has(conditionCode)) {
       return "linear-gradient(135deg, #d5d8dc 0%, #aeb6bf 50%, #85929e 100%)";
     }

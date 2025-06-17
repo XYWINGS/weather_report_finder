@@ -138,13 +138,28 @@ const WeatherApp: React.FC = () => {
           <Container maxWidth="lg" sx={{ p: 2 }}>
             {/* Main Weather Card */}
             <Card
-              elevation={8}
+              elevation={3}
               sx={{
                 mb: { xs: 3, sm: 4 },
                 background: "rgba(255,255,255,0.15)",
                 backdropFilter: "blur(20px)",
                 border: "1px solid rgba(255,255,255,0.2)",
                 borderRadius: 3,
+                transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                "&:hover": {
+                  transform: "translateY(+8px) scale(1.02)",
+                  "&::before": {
+                    background: `linear-gradient(135deg,
+                    rgba(255,255,255,0.35) 0%,
+                    rgba(255,255,255,0.25) 50%,
+                    rgba(255,255,255,0.15) 100%
+                  )`,
+                    boxShadow: `
+                    0 20px 60px rgba(0,0,0,0.2),
+                    inset 0 1px 0 rgba(255,255,255,0.5)
+                  `,
+                  },
+                },
               }}
             >
               <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
@@ -261,6 +276,21 @@ const WeatherApp: React.FC = () => {
                 )}20 0%, ${getUVIndexColor(weatherDataResponse.current.uv)}10 100%)`,
                 backdropFilter: "blur(10px)",
                 border: "1px solid rgba(255,255,255,0.2)",
+                transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                "&:hover": {
+                  transform: "translateY(-8px) scale(1.02)",
+                  "&::before": {
+                    background: `linear-gradient(135deg,
+                    rgba(255,255,255,0.35) 0%,
+                    rgba(255,255,255,0.25) 50%,
+                    rgba(255,255,255,0.15) 100%
+                  )`,
+                    boxShadow: `
+                    0 20px 60px rgba(0,0,0,0.2),
+                    inset 0 1px 0 rgba(255,255,255,0.5)
+                  `,
+                  },
+                },
               }}
             >
               <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
@@ -331,6 +361,21 @@ const WeatherApp: React.FC = () => {
                     background: "rgba(255,255,255,0.15)",
                     backdropFilter: "blur(10px)",
                     border: "1px solid rgba(255,255,255,0.2)",
+                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                    "&:hover": {
+                      transform: "translateY(-8px) scale(1.02)",
+                      "&::before": {
+                        background: `linear-gradient(135deg,
+                        rgba(255,255,255,0.35) 0%,
+                        rgba(255,255,255,0.25) 50%,
+                        rgba(255,255,255,0.15) 100%
+                      )`,
+                        boxShadow: `
+                        0 20px 60px rgba(0,0,0,0.2),
+                        inset 0 1px 0 rgba(255,255,255,0.5)
+                      `,
+                      },
+                    },
                   }}
                 >
                   <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
@@ -376,6 +421,21 @@ const WeatherApp: React.FC = () => {
                     background: "rgba(255,255,255,0.15)",
                     backdropFilter: "blur(10px)",
                     border: "1px solid rgba(255,255,255,0.2)",
+                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                    "&:hover": {
+                      transform: "translateY(-8px) scale(1.02)",
+                      "&::before": {
+                        background: `linear-gradient(135deg,
+                        rgba(255,255,255,0.35) 0%,
+                        rgba(255,255,255,0.25) 50%,
+                        rgba(255,255,255,0.15) 100%
+                      )`,
+                        boxShadow: `
+                        0 20px 60px rgba(0,0,0,0.2),
+                        inset 0 1px 0 rgba(255,255,255,0.5)
+                      `,
+                      },
+                    },
                   }}
                 >
                   <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
@@ -414,6 +474,21 @@ const WeatherApp: React.FC = () => {
                     background: "rgba(255,255,255,0.15)",
                     backdropFilter: "blur(10px)",
                     border: "1px solid rgba(255,255,255,0.2)",
+                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                    "&:hover": {
+                      transform: "translateY(-8px) scale(1.02)",
+                      "&::before": {
+                        background: `linear-gradient(135deg,
+                        rgba(255,255,255,0.35) 0%,
+                        rgba(255,255,255,0.25) 50%,
+                        rgba(255,255,255,0.15) 100%
+                      )`,
+                        boxShadow: `
+                        0 20px 60px rgba(0,0,0,0.2),
+                        inset 0 1px 0 rgba(255,255,255,0.5)
+                      `,
+                      },
+                    },
                   }}
                 >
                   <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
@@ -449,6 +524,21 @@ const WeatherApp: React.FC = () => {
                     background: "rgba(255,255,255,0.15)",
                     backdropFilter: "blur(10px)",
                     border: "1px solid rgba(255,255,255,0.2)",
+                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                    "&:hover": {
+                      transform: "translateY(-8px) scale(1.02)",
+                      "&::before": {
+                        background: `linear-gradient(135deg,
+                        rgba(255,255,255,0.35) 0%,
+                        rgba(255,255,255,0.25) 50%,
+                        rgba(255,255,255,0.15) 100%
+                      )`,
+                        boxShadow: `
+                        0 20px 60px rgba(0,0,0,0.2),
+                        inset 0 1px 0 rgba(255,255,255,0.5)
+                      `,
+                      },
+                    },
                   }}
                 >
                   <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
