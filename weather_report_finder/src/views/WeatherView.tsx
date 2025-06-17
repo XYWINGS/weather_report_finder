@@ -135,7 +135,7 @@ const WeatherApp: React.FC = () => {
         <WeatherBackgroundAnimation condition={conditionCode}>
           <WeatherHeader />
 
-          <Container maxWidth="lg" sx={{ p: 2, pt: 0 }}>
+          <Container maxWidth="lg" sx={{ p: 2 }}>
             {/* Main Weather Card */}
             <Card
               elevation={8}

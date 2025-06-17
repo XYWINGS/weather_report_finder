@@ -19,7 +19,6 @@ import { fetchWeather } from "@slices/weatherSlice";
 import { fetchLocation } from "@slices/locationSlice";
 import { useAppDispatch, useAppSelector } from "@slices/store";
 import { RequestState, type CitySuggestion } from "@configs/types";
-import icon from "../../../public/icon.svg";
 
 interface WeatherHeaderProps {
   onMenuClick?: () => void;
@@ -62,7 +61,7 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({ onMenuClick }) => {
             px: { xs: 1, sm: 2 },
             flexDirection: { xs: "column", md: "row" },
             alignItems: { xs: "stretch", md: "center" },
-            gap: { xs: 2, md: 3 },
+            gap: { xs: 2, md: 3, lg: 20 },
             py: { xs: 2, md: 0 },
           }}
         >
