@@ -242,8 +242,8 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({ c
       <div
         style={{
           position: "relative",
-          width: "100vw",
-          height: "100vh",
+          width: "100%",
+          height: "100%",
           overflow: "hidden",
         }}
       >
@@ -399,7 +399,7 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({ c
     } else if (cloudCodes.has(conditionCode)) {
       return "linear-gradient(135deg, #bdc3c7 0%, #95a5a6 50%, #7f8c8d 100%)";
     } else if (clearCodes.has(conditionCode)) {
-      return "linear-gradient(135deg,rgb(48, 183, 236) 0%, #98D8E8 50%, #87CEEB 100%)";
+      return "linear-gradient(135deg, #87CEEB 0%, #98D8E8 50%, #87CEEB 100%)";
     } else if (mistCodes.has(conditionCode)) {
       return "linear-gradient(135deg, #d5d8dc 0%, #aeb6bf 50%, #85929e 100%)";
     }
@@ -426,8 +426,8 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({ c
   return (
     <Box
       sx={{
-        minHeight: "90%",
-        height: "100%",
+        minHeight: "100%",
+        height: "100vh",
         width: "100%",
         background: getWeatherGradient(condition),
         overflowX: "hidden",
@@ -442,7 +442,7 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({ c
           top: 0,
           left: 0,
           width: "100%",
-          height: "100%",
+          height: "160%",
           pointerEvents: "none",
           zIndex: 0,
         }}
