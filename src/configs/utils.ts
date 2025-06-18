@@ -1,16 +1,9 @@
 import { AxiosError } from "axios";
 
 //Extract the error message from common response types
-export const getErrorMessage = (
-  error: unknown,
-  defaultErrorMessage: string
-) => {
+export const getErrorMessage = (error: unknown, defaultErrorMessage: string) => {
   if (error instanceof AxiosError) {
-    return (
-      error.response?.data?.message ||
-      error.response?.data?.error_message ||
-      defaultErrorMessage
-    );
+    return error.response?.data?.message || error.response?.data?.error_message || defaultErrorMessage;
   }
 
   if (error instanceof Error) {
@@ -36,11 +29,7 @@ export const getUserLocation = (): Promise<{ lat: number; lon: number }> => {
       },
       (error) => {
         console.log(error.message);
-        reject(
-          new Error(
-            "Unable to retrieve your location. Permission denied or unavailable."
-          )
-        );
+        reject(new Error("Unable to retrieve your location. Permission denied or unavailable."));
       }
     );
   });

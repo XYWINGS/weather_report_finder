@@ -392,18 +392,38 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({ c
   );
 
   const getWeatherGradient = (conditionCode: number) => {
-    if (stormCodes.has(conditionCode) || rainCodes.has(conditionCode)) {
-      return "linear-gradient(135deg, #2c3e50 0%, #3a4a60 40%, #4b5d75 70%, #5c6e87 100%)";
-    } else if (snowCodes.has(conditionCode)) {
-      return "linear-gradient(135deg,rgb(198, 221, 241) 0%, #cce7ff 50%, #b3daff 100%)";
-    } else if (cloudCodes.has(conditionCode)) {
-      return "linear-gradient(135deg, #bdc3c7 0%, #95a5a6 50%, #7f8c8d 100%)";
-    } else if (clearCodes.has(conditionCode)) {
-      return "linear-gradient(135deg, #87CEEB 0%, #98D8E8 50%, #87CEEB 100%)";
-    } else if (mistCodes.has(conditionCode)) {
-      return "linear-gradient(135deg, #d5d8dc 0%, #aeb6bf 50%, #85929e 100%)";
+    // Stormy weather (thunderstorms, heavy rain)
+    if (stormCodes.has(conditionCode)) {
+      return "linear-gradient(135deg, #1a2a4a 0%, #2c3e6e 40%, #3d518f 70%, #4e64b0 100%)";
     }
-    return "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+
+    // Rainy weather
+    if (rainCodes.has(conditionCode)) {
+      return "linear-gradient(135deg, #3a516b 0%, #4a6b8a 40%, #5a85a9 70%, #6a9fc8 100%)";
+    }
+
+    // Snowy weather
+    if (snowCodes.has(conditionCode)) {
+      return "linear-gradient(135deg, #e6f0f9 0%, #d0e4f5 30%, #bbd8f0 60%, #a5cceb 100%)";
+    }
+
+    // Cloudy weather
+    if (cloudCodes.has(conditionCode)) {
+      return "linear-gradient(135deg, #a7b8d1 0%, #8fa3c2 30%, #778eb3 60%, #5f79a4 100%)";
+    }
+
+    // Clear/sunny weather
+    if (clearCodes.has(conditionCode)) {
+      return "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)";
+    }
+
+    // Misty/foggy weather
+    if (mistCodes.has(conditionCode)) {
+      return "linear-gradient(135deg, #d9e2ec 0%, #b8c7db 50%, #97acca 100%)";
+    }
+
+    // Default gradient (should rarely be used)
+    return "linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)";
   };
 
   const getWeatherAnimation = (conditionCode: number) => {

@@ -136,12 +136,13 @@ const WeatherApp: React.FC = () => {
         <WeatherBackgroundAnimation condition={conditionCode}>
           <WeatherHeader />
 
-          <Container maxWidth="lg" sx={{ p: 1 }}>
+          <Container maxWidth="lg">
             {/* Main Weather Card */}
             <Card
               elevation={3}
               sx={{
                 mb: { xs: 3, sm: 4 },
+                mt: 3,
                 background: "rgba(255,255,255,0.15)",
                 backdropFilter: "blur(20px)",
                 border: "1px solid rgba(255,255,255,0.2)",
@@ -235,7 +236,7 @@ const WeatherApp: React.FC = () => {
             </Card>
 
             {/* Weather Hourly Details */}
-            <Box mb={3}>
+            <Box sx={{ mb: { xs: 3, sm: 4 } }}>
               <HourlyForecastList
                 hourlyData={weatherDataResponse.forecast.forecastday[0].hour}
                 isMetric={true}
@@ -244,7 +245,7 @@ const WeatherApp: React.FC = () => {
             </Box>
 
             {/* Weather Details Grid */}
-            <Grid container spacing={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
+            <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 3, sm: 4 } }}>
               <Grid size={{ xs: 12, md: 4, sm: 4 }}>
                 <WeatherCard
                   icon={<Grain />}

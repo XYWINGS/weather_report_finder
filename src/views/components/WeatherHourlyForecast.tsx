@@ -10,8 +10,10 @@ import {
   CardContent,
   useMediaQuery,
 } from "@mui/material";
-import React from "react";
+import { IconButton } from "@mui/material";
+import React, { useRef, useEffect } from "react";
 import type { HourlyForecastItem } from "@configs/types";
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { WbSunny, Cloud, CloudQueue, Grain, AcUnit, Thunderstorm, Visibility, Air, Opacity } from "@mui/icons-material";
 
 interface HourlyForecastCardProps {
@@ -80,7 +82,6 @@ const getWeatherIcon = (conditionCode: number, isDay: number) => {
   return iconMap[conditionCode] || <WbSunny />;
 };
 
-// Individual Hourly Card Component
 export const HourlyForecastCard: React.FC<HourlyForecastCardProps> = ({
   hourData,
   isMetric = true,
@@ -131,19 +132,17 @@ export const HourlyForecastCard: React.FC<HourlyForecastCardProps> = ({
                 rgba(255,255,255,0.05) 100%
               )`,
           backdropFilter: "blur(15px)",
-          borderRadius: 3,
-          border: isCurrentHour ? "2px solid rgba(25, 118, 210, 0.5)" : "1px solid rgba(255,255,255,0.2)",
           boxShadow: isCurrentHour
-            ? `0 12px 40px rgba(25, 118, 210, 0.3),
+            ? `0 12px 15px rgba(25, 118, 210, 0.3),
                inset 0 1px 0 rgba(255,255,255,0.4)`
-            : `0 4px 16px rgba(0,0,0,0.08),
+            : `0 4px 10px rgba(0,0,0,0.08),
                inset 0 1px 0 rgba(255,255,255,0.3)`,
           zIndex: -1,
           transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         },
         transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         "&:hover": {
-          transform: "translateY(+2px) scale(1.02)",
+          transform: "translateY(+4px) scale(1.02)",
           "&::before": {
             background: isCurrentHour
               ? `linear-gradient(135deg,
@@ -157,9 +156,9 @@ export const HourlyForecastCard: React.FC<HourlyForecastCardProps> = ({
                   rgba(255,255,255,0.1) 100%
                 )`,
             boxShadow: isCurrentHour
-              ? `0 16px 48px rgba(25, 118, 210, 0.4),
+              ? `0 10px 15px rgba(25, 118, 210, 0.4),
                  inset 0 1px 0 rgba(255,255,255,0.5)`
-              : `0 8px 24px rgba(0,0,0,0.12),
+              : `0 10px 15px rgba(0,0,0,0.12),
                  inset 0 1px 0 rgba(255,255,255,0.4)`,
           },
         },
@@ -305,7 +304,6 @@ export const HourlyForecastCard: React.FC<HourlyForecastCardProps> = ({
   );
 };
 
-// Hourly Forecast List Component
 export const HourlyForecastList: React.FC<HourlyForecastListProps> = ({
   hourlyData,
   isMetric = true,
@@ -313,13 +311,39 @@ export const HourlyForecastList: React.FC<HourlyForecastListProps> = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const currentTime = new Date();
   const displayData = hourlyData.slice(0, maxItems);
 
   const isCurrentHour = (timeString: string) => {
     const hourTime = new Date(timeString);
-    return Math.abs(currentTime.getTime() - hourTime.getTime()) < 30 * 60 * 1000; // Within 30 minutes
+    return Math.abs(currentTime.getTime() - hourTime.getTime()) < 30 * 60 * 1000;
+  };
+
+  const currentHourIndex = displayData.findIndex((hour) => isCurrentHour(hour.time));
+
+  useEffect(() => {
+    if (scrollContainerRef.current && currentHourIndex >= 0) {
+      const container = scrollContainerRef.current;
+      const cardWidth = isMobile ? 140 : 160;
+      const gap = isMobile ? 12 : 16;
+      const scrollPosition = (cardWidth + gap) * currentHourIndex - (container.clientWidth / 2 - cardWidth / 2);
+
+      container.scrollTo({
+        left: scrollPosition,
+        behavior: "smooth",
+      });
+    }
+  }, [currentHourIndex, isMobile]);
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = scrollContainerRef.current.clientWidth * 0.3;
+      scrollContainerRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
   };
 
   return (
@@ -337,22 +361,22 @@ export const HourlyForecastList: React.FC<HourlyForecastListProps> = ({
           right: 0,
           bottom: 0,
           background: `linear-gradient(135deg,
-            rgba(255,255,255,0.15) 0%,
-            rgba(255,255,255,0.08) 50%,
-            rgba(255,255,255,0.03) 100%
-          )`,
+              rgba(255,255,255,0.15) 0%,
+              rgba(255,255,255,0.08) 50%,
+              rgba(255,255,255,0.03) 100%
+            )`,
           backdropFilter: "blur(20px)",
           borderRadius: 3,
           border: "1px solid rgba(255,255,255,0.2)",
           boxShadow: `
-            0 8px 32px rgba(0,0,0,0.1),
-            inset 0 1px 0 rgba(255,255,255,0.3)
-          `,
+              0 8px 32px rgba(0,0,0,0.1),
+              inset 0 1px 0 rgba(255,255,255,0.3)
+            `,
           zIndex: -1,
         },
       }}
     >
-      <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+      <CardContent sx={{ p: { xs: 2, sm: 3 }, position: "relative" }}>
         {/* Header */}
         <Box sx={{ mb: 3 }}>
           <Typography
@@ -370,37 +394,72 @@ export const HourlyForecastList: React.FC<HourlyForecastListProps> = ({
             sx={{
               mt: 1,
               background: `linear-gradient(90deg,
-                ${theme.palette.primary.main}60 0%,
-                transparent 100%
-              )`,
+                  ${theme.palette.primary.main}60 0%,
+                  transparent 100%
+                )`,
               height: 2,
               border: "none",
             }}
           />
         </Box>
 
+        <IconButton
+          onClick={() => scroll("left")}
+          sx={{
+            position: "absolute",
+            left: 8,
+            top: "55%",
+            transform: "translateY(-50%)",
+            zIndex: 2,
+            color: "white",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            "&:hover": {
+              backgroundColor: "rgba(0,0,0,0.7)",
+            },
+            width: 40,
+            height: 40,
+            visibility: "visible",
+          }}
+        >
+          <ChevronLeft fontSize="medium" />
+        </IconButton>
+
+        <IconButton
+          onClick={() => scroll("right")}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: "55%",
+            transform: "translateY(-50%)",
+            zIndex: 2,
+            color: "white",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            "&:hover": {
+              backgroundColor: "rgba(0,0,0,0.7)",
+            },
+            width: 40,
+            height: 40,
+            visibility: "visible",
+          }}
+        >
+          <ChevronRight fontSize="medium" />
+        </IconButton>
+
         {/* Horizontal Scrollable List */}
         <Box
+          ref={scrollContainerRef}
           sx={{
             display: "flex",
-            direction : "column",
             gap: { xs: 1.5, sm: 2 },
             overflowX: "auto",
-            pb: 1,
+            pb: 3,
+            scrollBehavior: "smooth",
+            scrollbarWidth: "none",
             "&::-webkit-scrollbar": {
-              height: 6,
+              display: "none",
             },
-            "&::-webkit-scrollbar-track": {
-              background: "rgba(255,255,255,0.1)",
-              borderRadius: 3,
-            },
-            "&::-webkit-scrollbar-thumb": {
-              background: "rgba(255,255,255,0.3)",
-              borderRadius: 3,
-              "&:hover": {
-                background: "rgba(255,255,255,0.4)",
-              },
-            },
+            px: 4,
+            borderRadius: 3,
           }}
         >
           {displayData.map((hourData, _) => (
