@@ -31,6 +31,7 @@ import { fetchWeather } from "@slices/weatherSlice";
 import { WeatherCard } from "./components/WeatherCard";
 import WeatherHeader from "./components/WeatherHeader";
 import { useAppDispatch, useAppSelector } from "@slices/store";
+import { HourlyForecastList } from "./components/WeatherHourlyForecast";
 import { WeatherStatusComponent } from "./components/WeatherStatusComponent";
 import { WeatherBackgroundAnimation } from "./components/WeatherBackgroundAnimation";
 import { rainCodes, clearCodes, cloudCodes, RequestState, partlyCloudyCodes } from "@configs/types";
@@ -135,7 +136,7 @@ const WeatherApp: React.FC = () => {
         <WeatherBackgroundAnimation condition={conditionCode}>
           <WeatherHeader />
 
-          <Container maxWidth="lg" sx={{ p: 2 }}>
+          <Container maxWidth="lg" sx={{ p: 1 }}>
             {/* Main Weather Card */}
             <Card
               elevation={3}
@@ -232,6 +233,15 @@ const WeatherApp: React.FC = () => {
                 </Grid>
               </CardContent>
             </Card>
+
+            {/* Weather Hourly Details */}
+            <Box mb={3}>
+              <HourlyForecastList
+                hourlyData={weatherDataResponse.forecast.forecastday[0].hour}
+                isMetric={true}
+                maxItems={24}
+              />
+            </Box>
 
             {/* Weather Details Grid */}
             <Grid container spacing={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
@@ -352,7 +362,7 @@ const WeatherApp: React.FC = () => {
             </Card>
 
             {/* Additional Weather Info */}
-            <Grid container spacing={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
+            <Grid container spacing={{ xs: 1, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
               <Grid size={{ xs: 12, md: 6 }}>
                 <Card
                   elevation={3}
