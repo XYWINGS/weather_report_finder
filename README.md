@@ -3,7 +3,7 @@
 
 RainOrShine is a sleek, responsive weather web app that transforms raw weather conditions into rich visual experiences. From stormy skies to sunny days, the UI adjusts with gradients, animations, and icons.
 
-## Live Demo - https://weather-report-finder-bv3qwqmdf-xywingss-projects.vercel.app
+## Live Demo - https://rain-or-shine-weather-app.vercel.app
 
 ## ✨ Features
 
