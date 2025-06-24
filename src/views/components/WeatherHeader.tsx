@@ -90,7 +90,6 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({ onMenuClick }) => {
                 <Menu />
               </IconButton>
             )}
-
             {/* App Logo/Title */}
             <Box
               sx={{
@@ -99,6 +98,18 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({ onMenuClick }) => {
                 gap: { xs: 1, sm: 1.5, md: 2 },
                 flexGrow: { xs: 1, md: 0 },
                 justifyContent: { xs: "center", md: "flex-start" },
+                position: "relative",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: -8,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: { xs: "60%", md: "80%" },
+                  height: "2px",
+                  background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)",
+                  borderRadius: "1px",
+                },
               }}
             >
               <Box
@@ -106,31 +117,58 @@ const WeatherHeader: React.FC<WeatherHeaderProps> = ({ onMenuClick }) => {
                 src="/icon.svg"
                 alt="Rain Or Shine Weather App"
                 sx={{
-                  width: { xs: 32, sm: 36, md: 40 },
-                  height: { xs: 32, sm: 36, md: 40 },
-                  filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.2))",
-                  transition: "transform 0.2s ease",
+                  width: { xs: 36, sm: 42, md: 48 },
+                  height: { xs: 36, sm: 42, md: 48 },
+                  filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.25))",
+                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                   "&:hover": {
-                    transform: "scale(1.05)",
+                    transform: "scale(1.1) rotate(5deg)",
+                    filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.3))",
                   },
                 }}
               />
-              <Typography
-                variant={isSmallMobile ? "h5" : isMobile ? "h4" : "h3"}
-                component="h1"
-                sx={{
-                  fontWeight: 700,
-                  background: "linear-gradient(45deg, #ffffff 30%, #e3f2fd 70%)",
-                  backgroundClip: "text",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  letterSpacing: "-0.02em",
-                  textShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                  display: { xs: "block" },
-                }}
-              >
-                Rain Or Shine
-              </Typography>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                <Typography
+                  variant={isSmallMobile ? "h5" : isMobile ? "h4" : "h3"}
+                  component="h1"
+                  sx={{
+                    fontWeight: 800,
+                    background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 30%, #e2e8f0 70%, #cbd5e1 100%)",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    letterSpacing: { xs: "-0.01em", md: "-0.02em" },
+                    textShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                    lineHeight: 1.1,
+                    position: "relative",
+                    "&::after": {
+                      content: '""',
+                      position: "absolute",
+                      bottom: -2,
+                      left: 0,
+                      right: 0,
+                      height: "1px",
+                      background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)",
+                    },
+                  }}
+                >
+                  Rain or Shine
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "rgba(255,255,255,0.7)",
+                    fontWeight: 500,
+                    fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.8rem" },
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    opacity: 0.8,
+                    lineHeight: 1,
+                  }}
+                >
+                  Weather Forecast
+                </Typography>
+              </Box>
             </Box>
           </Box>
 
