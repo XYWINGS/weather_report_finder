@@ -245,7 +245,7 @@ const WeatherApp: React.FC = () => {
             </Box>
 
             {/* Weather Details Grid */}
-            <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 3, sm: 4 } }}>
+            <Grid container spacing={{ xs: 3, sm: 4 }} sx={{ mb: { xs: 3, sm: 4 } }}>
               <Grid size={{ xs: 12, md: 4, sm: 4 }}>
                 <WeatherCard
                   icon={<Grain />}
@@ -304,7 +304,7 @@ const WeatherApp: React.FC = () => {
                 },
               }}
             >
-              <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+              <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
                 <Grid container alignItems="center" spacing={2}>
                   <Grid size={{ xs: 12, sm: 8 }}>
                     <Box display="flex" alignItems="center" mb={1}>
@@ -363,7 +363,7 @@ const WeatherApp: React.FC = () => {
             </Card>
 
             {/* Additional Weather Info */}
-            <Grid container spacing={{ xs: 1, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
+            <Grid container spacing={{ xs: 3, sm: 4 }} mb={{ xs: 3, sm: 4 }}>
               <Grid size={{ xs: 12, md: 6 }}>
                 <Card
                   elevation={3}
@@ -389,7 +389,7 @@ const WeatherApp: React.FC = () => {
                     },
                   }}
                 >
-                  <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                  <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
                     <Box display="flex" alignItems="center" mb={2}>
                       <Thermostat sx={{ color: "white", mr: 1 }} />
                       <Typography variant={isMobile ? "h6" : "h5"} color="white" fontWeight={500}>
@@ -449,7 +449,7 @@ const WeatherApp: React.FC = () => {
                     },
                   }}
                 >
-                  <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                  <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
                     <Box display="flex" alignItems="center" mb={2}>
                       <Speed sx={{ color: "white", mr: 1 }} />
                       <Typography variant={isMobile ? "h6" : "h5"} color="white" fontWeight={500}>
@@ -476,7 +476,7 @@ const WeatherApp: React.FC = () => {
             </Grid>
 
             {/* Precipitation and Cloud Info */}
-            <Grid container spacing={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
+            <Grid container spacing={{ xs: 3, sm: 4 }} mb={{ xs: 3, sm: 4 }}>
               <Grid size={{ xs: 12, md: 6 }}>
                 <Card
                   elevation={3}
@@ -502,7 +502,7 @@ const WeatherApp: React.FC = () => {
                     },
                   }}
                 >
-                  <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                  <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
                     <Box display="flex" alignItems="center" mb={2}>
                       <BeachAccess sx={{ color: "white", mr: 1 }} />
                       <Typography variant={isMobile ? "h6" : "h5"} color="white" fontWeight={500}>
@@ -552,7 +552,7 @@ const WeatherApp: React.FC = () => {
                     },
                   }}
                 >
-                  <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                  <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
                     <Box display="flex" alignItems="center" mb={2}>
                       <CloudQueue sx={{ color: "white", mr: 1 }} />
                       <Typography variant={isMobile ? "h6" : "h5"} color="white" fontWeight={500}>

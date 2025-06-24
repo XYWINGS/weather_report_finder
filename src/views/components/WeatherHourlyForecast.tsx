@@ -327,7 +327,9 @@ export const HourlyForecastList: React.FC<HourlyForecastListProps> = ({
       const container = scrollContainerRef.current;
       const cardWidth = isMobile ? 140 : 160;
       const gap = isMobile ? 12 : 16;
-      const scrollPosition = (cardWidth + gap) * currentHourIndex - (container.clientWidth / 2 - cardWidth / 2);
+      const leftOffset = isMobile ? 40 : 60;
+      const scrollPosition =
+        (cardWidth + gap) * currentHourIndex - (container.clientWidth / 2 - cardWidth / 2) + leftOffset;
 
       container.scrollTo({
         left: scrollPosition,

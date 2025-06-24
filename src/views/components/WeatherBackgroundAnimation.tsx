@@ -1,6 +1,6 @@
-import { mistCodes, rainCodes, snowCodes, stormCodes, cloudCodes, clearCodes } from "@configs/types";
 import React from "react";
 import { Box, keyframes } from "@mui/material";
+import { mistCodes, rainCodes, snowCodes, stormCodes, cloudCodes, clearCodes } from "@configs/types";
 
 // Animation keyframes
 const rainDrop = keyframes`
@@ -422,7 +422,7 @@ export const WeatherBackgroundAnimation: React.FC<WeatherBackgroundProps> = ({ c
       return "linear-gradient(135deg, #d9e2ec 0%, #b8c7db 50%, #97acca 100%)";
     }
 
-    // Default gradient (should rarely be used)
+    // Default gradient
     return "linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)";
   };
 
