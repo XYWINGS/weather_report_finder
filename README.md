@@ -1,8 +1,9 @@
 
 ## 🌤️ RainOrShine — Dynamic Weather Visualizer
 
-RainOrShine is a sleek, responsive weather web app that transforms raw weather conditions into rich visual experiences. From stormy skies to sunny days, the UI adjusts with gradients, animations, and icons — all driven by condition codes.
+RainOrShine is a sleek, responsive weather web app that transforms raw weather conditions into rich visual experiences. From stormy skies to sunny days, the UI adjusts with gradients, animations, and icons.
 
+## Live Demo - https://weather-report-finder-bv3qwqmdf-xywingss-projects.vercel.app
 
 ## ✨ Features
 
